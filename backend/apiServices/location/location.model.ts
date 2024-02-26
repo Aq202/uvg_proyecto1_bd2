@@ -1,7 +1,9 @@
 import LocationSchema from "../../db/schemas/location.schema.js";
+import consts from "../../utils/consts.js";
 import CustomError from "../../utils/customError.js";
 import { someExists } from "../../utils/exists.js";
 import { createLocationDto, createMultipleLocationsDto } from "./location.dto.js";
+import { ObjectId } from "mongodb";
 
 const createLocation = async ({
 	name,
@@ -74,19 +76,39 @@ const getLocations = async ({
 	idUser,
 	country,
 	city,
+	page,
 }: {
 	country?: string;
 	city?: string;
 	idUser: string;
+	page?: number;
 }) => {
-	const filter: { idUser: string; country?: string; city?: string } = { idUser };
+	const filter: { idUser: ObjectId; country?: string; city?: string } = {
+		idUser: new ObjectId(idUser),
+	};
 
 	if (country) filter.country = country;
 	if (city) filter.city = city;
 
-	const locations = await LocationSchema.find(filter);
+	const count = await LocationSchema.countDocuments(filter);
+	const pages = Math.ceil(count / consts.resultsNumberPerPage);
 
-	return createMultipleLocationsDto(locations);
+	const queryPipeline: any = [
+		{
+			$match: filter,
+		},
+	];
+
+	if (page != undefined) {
+		queryPipeline.push({
+			$skip: page * consts.resultsNumberPerPage,
+		});
+		queryPipeline.push({
+			$limit: consts.resultsNumberPerPage,
+		});
+	}
+	const locations = await LocationSchema.aggregate(queryPipeline);
+	return { pages, total: count, result: createMultipleLocationsDto(locations) };
 };
 
 export { createLocation, updateLocation, deleteLocation, getLocations };

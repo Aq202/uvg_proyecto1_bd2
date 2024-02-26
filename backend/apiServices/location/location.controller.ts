@@ -1,5 +1,7 @@
+import CustomError from "../../utils/customError.js";
 import errorSender from "../../utils/errorSender.js";
-import { createLocation, deleteLocation, updateLocation } from "./location.model.js";
+import exists from "../../utils/exists.js";
+import { createLocation, deleteLocation, getLocations, updateLocation } from "./location.model.js";
 
 const createLocationController = async (req: AppRequest, res: AppResponse) => {
 	const { name, country, city, address } = req.body;
@@ -47,7 +49,6 @@ const deleteLocationController = async (req: AppRequest, res: AppResponse) => {
 	const idUser: string = req.session.id;
 
 	try {
-
 		await deleteLocation({ id: idLocation, idUser });
 
 		req.send({ ok: true });
@@ -60,4 +61,29 @@ const deleteLocationController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-export { createLocationController, updateLocationController, deleteLocationController };
+const getLocationsController = async (req: AppRequest, res: AppResponse) => {
+	if (!req.session) return;
+	const { city, country, page } = req.query;
+	const idUser: string = req.session.id;
+
+	try {
+		const parsedPage = exists(page) ? parseInt(page) : undefined;
+		const result = await getLocations({ idUser, country, city, page: parsedPage });
+
+		if (result.result.length === 0) throw new CustomError("No se encontraron resultados.", 404);
+		res.send(result);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener ubicaciones.",
+		});
+	}
+};
+
+export {
+	createLocationController,
+	updateLocationController,
+	deleteLocationController,
+	getLocationsController,
+};
