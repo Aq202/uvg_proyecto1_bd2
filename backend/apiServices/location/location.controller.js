@@ -1,5 +1,5 @@
 import errorSender from "../../utils/errorSender.js";
-import { createLocation, updateLocation } from "./location.model.js";
+import { createLocation, deleteLocation, updateLocation } from "./location.model.js";
 const createLocationController = async (req, res) => {
     const { name, country, city, address } = req.body;
     try {
@@ -34,4 +34,22 @@ const updateLocationController = async (req, res) => {
         });
     }
 };
-export { createLocationController, updateLocationController };
+const deleteLocationController = async (req, res) => {
+    if (!req.session)
+        return;
+    const { idLocation } = req.params;
+    const idUser = req.session.id;
+    try {
+        // buscar si existen rides con la ubicación
+        await deleteLocation({ id: idLocation, idUser });
+        req.send({ ok: true });
+    }
+    catch (ex) {
+        await errorSender({
+            res,
+            ex,
+            defaultError: "Ocurrio un error al eliminar ubicación.",
+        });
+    }
+};
+export { createLocationController, updateLocationController, deleteLocationController };

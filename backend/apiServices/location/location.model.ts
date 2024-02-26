@@ -1,7 +1,7 @@
 import LocationSchema from "../../db/schemas/location.schema.js";
 import CustomError from "../../utils/customError.js";
 import { someExists } from "../../utils/exists.js";
-import { createLocationDto } from "./location.dto.js";
+import { createLocationDto, createMultipleLocationsDto } from "./location.dto.js";
 
 const createLocation = async ({
 	name,
@@ -58,4 +58,35 @@ const updateLocation = async ({
 	return createLocationDto(location);
 };
 
-export { createLocation, updateLocation };
+const deleteLocation = async ({ id, idUser }: { id: string; idUser: string }) => {
+	try {
+		const { acknowledged, deletedCount } = await LocationSchema.deleteOne({ _id: id, idUser });
+
+		if (!acknowledged) throw new CustomError("Ocurrió un error al eliminar ubicación.", 500);
+		if (deletedCount !== 1) throw new CustomError("No se encontró la ubicación.", 404);
+	} catch (ex: any) {
+		if (ex?.kind === "ObjectId") throw new CustomError("El id de la ubicación no es válido.", 400);
+		throw ex;
+	}
+};
+
+const getLocations = async ({
+	idUser,
+	country,
+	city,
+}: {
+	country?: string;
+	city?: string;
+	idUser: string;
+}) => {
+	const filter: { idUser: string; country?: string; city?: string } = { idUser };
+
+	if (country) filter.country = country;
+	if (city) filter.city = city;
+
+	const locations = await LocationSchema.find(filter);
+
+	return createMultipleLocationsDto(locations);
+};
+
+export { createLocation, updateLocation, deleteLocation, getLocations };
