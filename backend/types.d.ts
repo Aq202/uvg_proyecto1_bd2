@@ -1,0 +1,23 @@
+type User = {
+	name: string;
+	email: string;
+	phone: string;
+	id: string;
+};
+
+type session = {
+	session?: User;
+};
+
+type AppRequest = session & Record<string, any>;
+
+type AppResponse = Record<string, any>;
+
+type AppLocation = {
+	id: ObjectId;
+	name: String;
+	country: String;
+	city: String;
+	address: String;
+	idUser: String;
+};
