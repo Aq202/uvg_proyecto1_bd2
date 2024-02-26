@@ -1,7 +1,7 @@
 import { NextFunction } from 'express';
 import { validateToken } from '../services/jwt.js';
 
-const ensureRefreshTokenAuth = async (req:AppRequest, res:AppResponse, next:NextFunction):Promise<void> => {
+const ensureAuth = async (req:AppRequest, res:AppResponse, next:NextFunction):Promise<void> => {
   const authToken = req.cookies?.refreshToken;
 
   if (!authToken) {
@@ -22,4 +22,4 @@ const ensureRefreshTokenAuth = async (req:AppRequest, res:AppResponse, next:Next
 
 };
 
-export default ensureRefreshTokenAuth;
+export default ensureAuth;

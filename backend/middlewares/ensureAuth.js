@@ -1,5 +1,5 @@
 import { validateToken } from '../services/jwt.js';
-const ensureRefreshTokenAuth = async (req, res, next) => {
+const ensureAuth = async (req, res, next) => {
     var _a;
     const authToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
     if (!authToken) {
@@ -17,4 +17,4 @@ const ensureRefreshTokenAuth = async (req, res, next) => {
         res.sendStatus(401);
     }
 };
-export default ensureRefreshTokenAuth;
+export default ensureAuth;

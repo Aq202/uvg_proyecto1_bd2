@@ -19,4 +19,10 @@ const createUser = async ({ name, email, phone, password, }) => {
         throw ex;
     }
 };
-export { createUser };
+const authenticate = async ({ email, password, }) => {
+    const user = await UserSchema.findOne({ email, password });
+    if (!user)
+        throw new CustomError("Usuario o contraseña incorrectos.", 401);
+    return createUserDto(user);
+};
+export { createUser, authenticate };
