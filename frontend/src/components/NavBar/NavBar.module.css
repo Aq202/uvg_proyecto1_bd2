@@ -1,0 +1,45 @@
+.mainContainer{
+    width: 100%;
+}
+
+.iconContainer{
+    display: flex;
+    height: 50px;
+    align-items: flex-end;
+    color: #2B2B2B;
+}
+
+.carIcon {
+    width: 80%;
+    height: 80%;
+    align-items: flex-end;
+}
+
+.personIcon {
+    width: 80%;
+    height: 80%;
+}
+
+.bar{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    background-color: #2B2B2B;
+    color: #ffffff;
+}
+
+.section{
+    margin: 0 2% 0 2%;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.section:hover{
+    font-weight: 600;
+}
+
+@media (max-aspect-ratio: 1/1) {
+    .bar {
+        justify-content: center;
+    }
+}
