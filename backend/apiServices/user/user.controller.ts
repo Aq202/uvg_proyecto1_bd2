@@ -1,6 +1,7 @@
 import { signToken } from "../../services/jwt.js";
 import errorSender from "../../utils/errorSender.js";
-import { authenticate, createUser } from "./user.model.js";
+import exists from "../../utils/exists.js";
+import { authenticate, createUser, updateUser } from "./user.model.js";
 import hash from "hash.js";
 
 const createUserController = async (req: AppRequest, res: AppResponse) => {
@@ -9,6 +10,27 @@ const createUserController = async (req: AppRequest, res: AppResponse) => {
 	try {
 		const passwordHash = hash.sha256().update(password).digest("hex");
 		const user = await createUser({ name, email, phone, password: passwordHash });
+
+		res.send(user);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al crear nuevo usuario.",
+		});
+	}
+};
+
+const updateUserController = async (req: AppRequest, res: AppResponse) => {
+	const { name, email, phone, password } = req.body;
+	const id: string = req.session?.id;
+
+	try {
+		const passwordHash = exists(password)
+			? hash.sha256().update(password).digest("hex")
+			: undefined;
+
+		const user = await updateUser({ id, name, email, phone, password: passwordHash });
 
 		res.send(user);
 	} catch (ex) {
@@ -42,4 +64,4 @@ const loginController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-export { createUserController, loginController };
+export { createUserController, loginController, updateUserController };
