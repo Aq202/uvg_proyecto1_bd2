@@ -1,5 +1,5 @@
 import errorSender from "../../utils/errorSender.js";
-import { createLocation } from "./location.model.js";
+import { createLocation, updateLocation } from "./location.model.js";
 
 const createLocationController = async (req: AppRequest, res: AppResponse) => {
 	const { name, country, city, address } = req.body;
@@ -20,5 +20,24 @@ const createLocationController = async (req: AppRequest, res: AppResponse) => {
 		});
 	}
 };
+const updateLocationController = async (req: AppRequest, res: AppResponse) => {
+	const { id, name, country, city, address } = req.body;
 
-export { createLocationController };
+	try {
+		if (!req.session) return;
+
+		const idUser: string = req.session.id;
+
+		const location = await updateLocation({ id, name, country, city, address, idUser });
+
+		res.send(location);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al actualizar ubicación.",
+		});
+	}
+};
+
+export { createLocationController, updateLocationController };
