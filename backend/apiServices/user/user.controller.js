@@ -21,6 +21,8 @@ const createUserController = async (req, res) => {
 const updateUserController = async (req, res) => {
     var _a;
     const { name, email, phone, password } = req.body;
+    if (!req.session)
+        return;
     const id = (_a = req.session) === null || _a === void 0 ? void 0 : _a.id;
     try {
         const passwordHash = exists(password)

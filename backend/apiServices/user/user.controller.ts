@@ -23,6 +23,8 @@ const createUserController = async (req: AppRequest, res: AppResponse) => {
 
 const updateUserController = async (req: AppRequest, res: AppResponse) => {
 	const { name, email, phone, password } = req.body;
+
+	if (!req.session) return;
 	const id: string = req.session?.id;
 
 	try {
