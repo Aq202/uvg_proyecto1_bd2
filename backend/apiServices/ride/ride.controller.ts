@@ -3,7 +3,7 @@ import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
 import parseBoolean from "../../utils/parseBoolean.js";
 import { getLocationById } from "../location/location.model.js";
-import { createRide, getRides } from "./ride.model.js";
+import { assignUserToRide, createRide, getRides } from "./ride.model.js";
 
 const createRideController = async (req: AppRequest, res: AppResponse) => {
 	const {
@@ -79,4 +79,22 @@ const getRidesController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-export { createRideController, getRidesController };
+const assignUserToRideController = async (req: AppRequest, res: AppResponse) => {
+	const user = req.session;
+	if (!user) return;
+	try {
+		const { idRide } = req.params;
+
+		await assignUserToRide({ user, idRide });
+
+		res.send({ ok: true });
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener viajes.",
+		});
+	}
+};
+
+export { createRideController, getRidesController, assignUserToRideController };

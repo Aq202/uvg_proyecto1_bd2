@@ -2,6 +2,8 @@ import RideSchema from "../../db/schemas/ride.schema.js";
 import { createMultipleRidesDto, createRideDto } from "./ride.dto.js";
 import consts from "../../utils/consts.js";
 import { ObjectId } from "mongodb";
+import CustomError from "../../utils/customError.js";
+import { startSession } from "mongoose";
 const createRide = async ({ idStartLocation, idArrivalLocation, user, datetime, vehicle, }) => {
     const ride = new RideSchema();
     ride.startLocation = idStartLocation;
@@ -42,7 +44,7 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
                 isPassenger: {
                     $cond: {
                         if: {
-                            $in: [idUser, "$passengers._id"]
+                            $in: [idUser, "$passengers._id"],
                         },
                         then: true,
                         else: false,
@@ -88,4 +90,22 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
     const rides = await RideSchema.aggregate(queryPipeline);
     return { pages, total: count, result: createMultipleRidesDto(rides) };
 };
-export { createRide, getRides };
+const assignUserToRide = async ({ user, idRide }) => {
+    const session = await startSession();
+    try {
+        session.startTransaction();
+        const ride = await RideSchema.findOneAndUpdate({ _id: idRide }, { $push: { passengers: Object.assign({ _id: user.id }, user) } }, { session });
+        if (!ride)
+            throw new CustomError("No se encontró el viaje.", 404);
+        if (ride.user._id === user.id)
+            throw new CustomError("El conductor no puede ser pasajero.", 400);
+        await session.commitTransaction();
+    }
+    catch (ex) {
+        await session.abortTransaction();
+        if ((ex === null || ex === void 0 ? void 0 : ex.kind) === "ObjectId")
+            throw new CustomError("El id del ride no es válido.", 400);
+        throw ex;
+    }
+};
+export { createRide, getRides, assignUserToRide };
