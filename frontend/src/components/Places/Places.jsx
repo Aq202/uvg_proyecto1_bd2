@@ -98,6 +98,20 @@ function Places() {
             defaultValue={placeToEdit.name}
             onChange={handleFormChange}
           />
+          <InputText
+            title="Dirección"
+            name="address"
+            value={placeToEdit.address}
+            defaultValue={placeToEdit.address}
+            onChange={handleFormChange}
+          />
+          <InputText
+            title="Ubicación"
+            name="location"
+            value={placeToEdit.location}
+            defaultValue={placeToEdit.location}
+            onChange={handleFormChange}
+          />
         </div>
       </PopUp>
       )}
