@@ -43,6 +43,10 @@
     align-items: center;
 }
 
+.updateButton{
+    margin-top: 16px;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .filtersContainer {
         margin-left: 0;

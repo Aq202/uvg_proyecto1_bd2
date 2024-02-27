@@ -5,7 +5,7 @@ import { RiDeleteBin6Line as DeleteIcon } from 'react-icons/ri';
 import styles from './Place.module.css';
 
 function Place({
-  name, address, location, editPlace,
+  name, address, location, editPlace, deletePlace,
 }) {
   return (
     <div className={styles.placeContainer}>
@@ -13,8 +13,8 @@ function Place({
       <p className={styles.address}>{address}</p>
       <p className={styles.location}>{location}</p>
       <div className={styles.iconsSection}>
-        <EditIcon className={styles.editIcon} onClick={() => editPlace('editPlace')} />
-        <DeleteIcon className={styles.deleteIcon} />
+        <EditIcon className={styles.editIcon} onClick={editPlace} />
+        <DeleteIcon className={styles.deleteIcon} onClick={deletePlace} />
       </div>
     </div>
   );
@@ -25,6 +25,7 @@ Place.propTypes = {
   address: PropTypes.string.isRequired,
   location: PropTypes.string.isRequired,
   editPlace: PropTypes.func.isRequired,
+  deletePlace: PropTypes.func.isRequired,
 };
 
 export default Place;

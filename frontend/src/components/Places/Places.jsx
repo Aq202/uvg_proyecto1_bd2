@@ -6,23 +6,72 @@ import Place from '../Place/Place';
 import usePopUp from '../../hooks/usePopUp';
 import PopUp from '../PopUp/PopUp';
 import InputText from '../InputText';
+import Button from '../Button';
+import useFetch from '../../hooks/useFetch';
+import { serverHost } from '../../config';
 
 function Places() {
-  const [filters, setFilters] = useState();
+  const [filters, setFilters] = useState({});
+  const [places, setPlaces] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [isEditOpen, openEdit, closeEdit] = usePopUp();
   const [placeToEdit, setPlaceToEdit] = useState(false);
-  const [places, setPlaces] = useState([
-    {
-      location: 'Hola', name: 'Hola', address: 'HOla',
-    },
-    {
-      location: 'Hola', name: 'Hola', address: 'HOla',
-    },
-  ]);
+  const { callFetch: fetchLocations, result: resultGet, error: errorGet } = useFetch();
+  const { callFetch: putLocation, result: resultPut, loading: loadingPut } = useFetch();
+  const { callFetch: deleteLocation, result: resultDelete } = useFetch();
 
-  const editPlace = (name, address, location) => {
-    setPlaceToEdit({ name, address, location });
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
+
+  const editPlace = (id, name, address, city, country) => {
+    setPlaceToEdit({
+      id, name, address, city, country,
+    });
+  };
+
+  const getLocations = () => {
+    const { country, city } = filters;
+    const paramsObj = { page: currentPage };
+
+    if (country !== undefined && country !== '') {
+      paramsObj.country = country;
+    }
+
+    if (city !== undefined && city !== '') {
+      paramsObj.city = city;
+    }
+
+    const searchParams = new URLSearchParams(paramsObj);
+
+    fetchLocations({
+      uri: `${serverHost}/location?${searchParams.toString()}`,
+      headers: { authorization: token },
+    });
+  };
+
+  const updateLocation = () => {
+    putLocation({
+      uri: `${serverHost}/location/`,
+      headers: { authorization: token },
+      body: JSON.stringify(placeToEdit),
+      method: 'PATCH',
+      parse: false,
+    });
+  };
+
+  const deletePlace = (placeId) => {
+    deleteLocation({
+      uri: `${serverHost}/location/${placeId}`,
+      headers: { authorization: token },
+      method: 'DELETE',
+      parse: false,
+    });
+  };
+
+  const refreshPlaces = () => {
+    setPlaces([]);
+    setFilters({});
+    closeEdit();
+    getLocations();
   };
 
   const handleFormChange = (e) => {
@@ -36,7 +85,6 @@ function Places() {
   };
 
   const handlePageChange = (e, page) => {
-    setPlaces([]);
     setCurrentPage(page - 1);
   };
 
@@ -44,6 +92,26 @@ function Places() {
     if (!placeToEdit) return;
     openEdit();
   }, [placeToEdit]);
+
+  useEffect(() => {
+    if (resultGet) {
+      setPlaces(resultGet.result);
+    }
+  }, [resultGet]);
+
+  useEffect(() => {
+    setPlaces([]);
+    getLocations();
+  }, [currentPage, filters]);
+
+  useEffect(() => {
+    if (!resultPut && !resultDelete) return;
+    refreshPlaces();
+  }, [resultPut, resultDelete]);
+
+  useEffect(() => {
+    getLocations();
+  }, []);
 
   return (
     <div className={styles.mainContainer}>
@@ -76,16 +144,27 @@ function Places() {
         </div>
       </div>
 
-      <div className={styles.placesContainer}>
-        {places.map((place) => (
-          <Place
-            location={place.location}
-            name={place.name}
-            address={place.address}
-            editPlace={() => editPlace(place.name, place.location, place.address)}
-          />
-        ))}
-      </div>
+      {!errorGet && (
+        <div className={styles.placesContainer}>
+          {places?.map((place) => (
+            <Place
+              location={`${place.city}, ${place.country}`}
+              name={place.name}
+              address={place.address}
+              editPlace={() => editPlace(
+                place.id,
+                place.name,
+                place.address,
+                place.city,
+                place.country,
+              )}
+              deletePlace={() => deletePlace(place.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {errorGet && <p>No se encontraron resultados</p>}
 
       {isEditOpen && (
       <PopUp close={closeEdit} closeWithBackground>
@@ -106,18 +185,26 @@ function Places() {
             onChange={handleFormChange}
           />
           <InputText
-            title="Ubicación"
-            name="location"
-            value={placeToEdit.location}
-            defaultValue={placeToEdit.location}
+            title="Ciudad"
+            name="city"
+            value={placeToEdit.city}
+            defaultValue={placeToEdit.city}
             onChange={handleFormChange}
           />
+          <InputText
+            title="País"
+            name="country"
+            value={placeToEdit.country}
+            defaultValue={placeToEdit.country}
+            onChange={handleFormChange}
+          />
+          <Button text="Actualizar" className={styles.updateButton} onClick={updateLocation} disabled={loadingPut} />
         </div>
       </PopUp>
       )}
 
       <Pagination
-        count={0}
+        count={resultGet?.pages ?? 0}
         siblingCount={2}
         className={styles.pagination}
         onChange={handlePageChange}
