@@ -22,7 +22,6 @@ const createUser = async ({ name, email, phone, password, }) => {
 };
 const authenticate = async ({ email, password, }) => {
     const user = await UserSchema.findOne({ email, password }, { password: 0 });
-    console.log(user);
     if (!user)
         throw new CustomError("Usuario o contraseña incorrectos.", 401);
     return createUserDto(user);

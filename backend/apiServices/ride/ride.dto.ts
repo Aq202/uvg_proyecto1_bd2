@@ -1,3 +1,4 @@
+import { createLocationDto } from "../location/location.dto.js";
 import { createMultipleUsersDto, createUserDto } from "../user/user.dto.js";
 
 const createRideDto = (resource: any): Ride => {
@@ -5,8 +6,10 @@ const createRideDto = (resource: any): Ride => {
 		resource?._doc ?? resource;
 	return {
 		id: resource?._id?.valueOf() ?? resource.id,
-		startLocation,
-		arrivalLocation,
+		startLocation:
+			typeof startLocation === "string" ? startLocation : createLocationDto(startLocation),
+		arrivalLocation:
+			typeof arrivalLocation === "string" ? arrivalLocation : createLocationDto(arrivalLocation),
 		user: createUserDto(user),
 		passengers: passengers ? createMultipleUsersDto(passengers) : [],
 		completed: completed,
@@ -15,7 +18,7 @@ const createRideDto = (resource: any): Ride => {
 	};
 };
 
-const createMultipleRidesDto = (resources: [any]) =>
+const createMultipleRidesDto = (resources: any[]) =>
 	resources?.map((resource) => createRideDto(resource));
 
 export { createRideDto, createMultipleRidesDto };

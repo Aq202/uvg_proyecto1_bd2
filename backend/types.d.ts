@@ -30,8 +30,8 @@ type Vehicle = {
 
 type Ride = {
 	id: string;
-	startLocation: AppLocation;
-	arrivalLocation: AppLocation;
+	startLocation: AppLocation | string;
+	arrivalLocation: AppLocation | string;
 	user: User;
 	passengers: User[];
 	completed: boolean;

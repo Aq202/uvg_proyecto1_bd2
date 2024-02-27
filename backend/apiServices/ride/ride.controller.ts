@@ -1,7 +1,9 @@
 import CustomError from "../../utils/customError.js";
 import errorSender from "../../utils/errorSender.js";
+import exists from "../../utils/exists.js";
+import parseBoolean from "../../utils/parseBoolean.js";
 import { getLocationById } from "../location/location.model.js";
-import { createRide } from "./ride.model.js";
+import { createRide, getRides } from "./ride.model.js";
 
 const createRideController = async (req: AppRequest, res: AppResponse) => {
 	const {
@@ -46,4 +48,35 @@ const createRideController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-export { createRideController };
+const getRidesController = async (req: AppRequest, res: AppResponse) => {
+	const { city, country, page, order, passenger, driver } = req.query;
+	if (!req.session) return;
+	const idUser = req.session.id;
+
+	try {
+		const parsedPage = exists(page) ? parseInt(page) : undefined;
+		const parsedOrder =
+			parseInt(order) === 1 || parseInt(order) === -1 ? parseInt(order) : undefined;
+
+		const result = await getRides({
+			country,
+			city,
+			page: parsedPage,
+			order: parsedOrder,
+			idUser,
+			passengerFilter: parseBoolean(passenger),
+			driverFilter: parseBoolean(driver),
+		});
+
+		if (result.result.length === 0) throw new CustomError("No se encontraron resultados.", 404);
+		res.send(result);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener viajes.",
+		});
+	}
+};
+
+export { createRideController, getRidesController };
