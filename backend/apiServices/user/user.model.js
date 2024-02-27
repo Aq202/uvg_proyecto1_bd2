@@ -51,4 +51,15 @@ const updateUser = async ({ id, name, email, phone, password, }) => {
         throw ex;
     }
 };
-export { createUser, authenticate, updateUser };
+const getUserById = async ({ idUser }) => {
+    try {
+        const user = await UserSchema.findById(idUser);
+        return user;
+    }
+    catch (ex) {
+        if ((ex === null || ex === void 0 ? void 0 : ex.kind) === "ObjectId")
+            throw new CustomError("El id de la ubicación no es válido.", 400);
+        throw ex;
+    }
+};
+export { createUser, authenticate, updateUser, getUserById };

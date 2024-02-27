@@ -21,3 +21,20 @@ type AppLocation = {
 	address: String;
 	idUser: String;
 };
+
+type Vehicle = {
+	type: string;
+	identification: string;
+	color: string;
+};
+
+type Ride = {
+	id: string;
+	startLocation: AppLocation;
+	arrivalLocation: AppLocation;
+	user: User;
+	passengers: User[];
+	completed: boolean;
+	datetime: Date;
+	vehicle: Vehicle;
+};
