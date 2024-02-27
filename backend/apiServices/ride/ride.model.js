@@ -37,6 +37,19 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
         {
             $unwind: "$arrivalLocation",
         },
+        {
+            $addFields: {
+                isPassenger: {
+                    $cond: {
+                        if: {
+                            $in: [idUser, "$passengers._id"]
+                        },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
     ];
     // Agregar filtrado por ubicación
     const conditions = [];
@@ -58,7 +71,6 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
     }
     if (conditions.length > 0)
         queryPipeline.push({ $match: { $and: conditions } });
-    console.log(queryPipeline, conditions);
     // Realizar conteo total de registros
     const count = (_b = (_a = (await RideSchema.aggregate([...queryPipeline, { $count: "total" }]))[0]) === null || _a === void 0 ? void 0 : _a.total) !== null && _b !== void 0 ? _b : 0;
     const pages = Math.ceil(count / consts.resultsNumberPerPage);

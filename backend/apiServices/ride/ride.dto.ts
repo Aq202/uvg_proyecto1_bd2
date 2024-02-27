@@ -2,8 +2,16 @@ import { createLocationDto } from "../location/location.dto.js";
 import { createMultipleUsersDto, createUserDto } from "../user/user.dto.js";
 
 const createRideDto = (resource: any): Ride => {
-	const { startLocation, arrivalLocation, user, passengers, completed, datetime, vehicle } =
-		resource?._doc ?? resource;
+	const {
+		startLocation,
+		arrivalLocation,
+		user,
+		passengers,
+		completed,
+		datetime,
+		vehicle,
+		isPassenger,
+	} = resource?._doc ?? resource;
 	return {
 		id: resource?._id?.valueOf() ?? resource.id,
 		startLocation:
@@ -15,6 +23,7 @@ const createRideDto = (resource: any): Ride => {
 		completed: completed,
 		datetime,
 		vehicle,
+		isPassenger,
 	};
 };
 

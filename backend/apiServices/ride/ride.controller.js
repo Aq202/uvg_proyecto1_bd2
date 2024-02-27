@@ -59,7 +59,6 @@ const getRidesController = async (req, res) => {
         res.send(result);
     }
     catch (ex) {
-        console.log(ex);
         await errorSender({
             res,
             ex,

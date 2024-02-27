@@ -37,4 +37,5 @@ type Ride = {
 	completed: boolean;
 	datetime: Date;
 	vehicle: Vehicle;
+	isPassenger?: boolean;
 };
