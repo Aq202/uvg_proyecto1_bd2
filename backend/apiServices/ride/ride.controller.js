@@ -28,7 +28,6 @@ const createRideController = async (req, res) => {
         res.send(ride);
     }
     catch (ex) {
-        console.log(ex);
         await errorSender({
             res,
             ex,

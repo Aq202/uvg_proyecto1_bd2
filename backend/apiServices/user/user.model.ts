@@ -40,7 +40,7 @@ const authenticate = async ({
 	email: string;
 	password: string;
 }): Promise<User> => {
-	const user = await UserSchema.findOne({ email, password });
+	const user = await UserSchema.findOne({ email, password }, { password: 0 });
 	if (!user) throw new CustomError("Usuario o contraseña incorrectos.", 401);
 
 	return createUserDto(user);
@@ -60,7 +60,7 @@ const updateUser = async ({
 	password?: string;
 }): Promise<User> => {
 	try {
-		const user = await UserSchema.findById(id);
+		const user = await UserSchema.findById(id, { password: 0 });
 
 		if (!user) throw new CustomError("No se encontró al usuario.", 404);
 
@@ -82,7 +82,7 @@ const updateUser = async ({
 
 const getUserById = async ({ idUser }: { idUser: string }) => {
 	try {
-		const user = await UserSchema.findById(idUser);
+		const user = await UserSchema.findById(idUser, { password: 0 });
 
 		return user;
 	} catch (ex: any) {
