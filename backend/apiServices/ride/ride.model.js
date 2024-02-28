@@ -123,8 +123,22 @@ const assignUserToRide = async ({ user, idRide }) => {
     catch (ex) {
         await session.abortTransaction();
         if ((ex === null || ex === void 0 ? void 0 : ex.kind) === "ObjectId")
-            throw new CustomError("El id del ride no es válido.", 400);
+            throw new CustomError("El id no es válido.", 400);
         throw ex;
     }
 };
-export { createRide, getRides, assignUserToRide };
+const removeUserFromRide = async ({ idUser, idRide }) => {
+    try {
+        const { modifiedCount, matchedCount } = await RideSchema.updateOne({ _id: idRide }, { passengers: { $pull: { _id: idUser } } });
+        if (matchedCount === 0)
+            throw new CustomError("No se encontraron coincidencias.", 404);
+        if (modifiedCount === 0)
+            throw new CustomError("No se pudo remover al usuario del ride.", 500);
+    }
+    catch (ex) {
+        if ((ex === null || ex === void 0 ? void 0 : ex.kind) === "ObjectId")
+            throw new CustomError("El id no es válido.", 400);
+        throw ex;
+    }
+};
+export { createRide, getRides, assignUserToRide, removeUserFromRide };

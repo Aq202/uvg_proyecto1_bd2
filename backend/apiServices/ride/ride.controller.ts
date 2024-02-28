@@ -3,7 +3,7 @@ import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
 import parseBoolean from "../../utils/parseBoolean.js";
 import { getLocationById } from "../location/location.model.js";
-import { assignUserToRide, createRide, getRides } from "./ride.model.js";
+import { assignUserToRide, createRide, getRides, removeUserFromRide } from "./ride.model.js";
 
 const createRideController = async (req: AppRequest, res: AppResponse) => {
 	const {
@@ -91,9 +91,32 @@ const assignUserToRideController = async (req: AppRequest, res: AppResponse) => 
 		await errorSender({
 			res,
 			ex,
-			defaultError: "Ocurrio un error al obtener viajes.",
+			defaultError: "Ocurrio un error al asignar usuario a viaje.",
 		});
 	}
 };
 
-export { createRideController, getRidesController, assignUserToRideController };
+const removeUserFromRideController = async (req: AppRequest, res: AppResponse) => {
+	const user = req.session;
+	if (!user) return;
+	try {
+		const { idRide } = req.params;
+
+		await removeUserFromRide({ idUser: user.id, idRide });
+
+		res.send({ ok: true });
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al desasignar usuario de viaje.",
+		});
+	}
+};
+
+export {
+	createRideController,
+	getRidesController,
+	assignUserToRideController,
+	removeUserFromRideController,
+};

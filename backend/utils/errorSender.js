@@ -17,6 +17,7 @@ const errorSender = async ({ res, ex, defaultError = "Ocurrió un error.", }) =>
         err = ex.message;
         status = (_a = ex.status) !== null && _a !== void 0 ? _a : 500;
     }
+    console.log("Error manejado: \n", ex);
     res.statusMessage = err;
     res.status(status).send({ err, status, errorObj: ex });
 };
