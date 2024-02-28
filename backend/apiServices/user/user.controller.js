@@ -55,4 +55,19 @@ const loginController = async (req, res) => {
         });
     }
 };
-export { createUserController, loginController, updateUserController };
+const getSessionUserController = async (req, res) => {
+    try {
+        if (!req.session)
+            return;
+        const user = req.session;
+        res.send(user);
+    }
+    catch (ex) {
+        await errorSender({
+            res,
+            ex,
+            defaultError: "Ocurrio un error al obtener datos de usuario.",
+        });
+    }
+};
+export { createUserController, loginController, updateUserController, getSessionUserController };
