@@ -45,14 +45,15 @@ const getRidesController = async (req, res) => {
     try {
         const parsedPage = exists(page) ? parseInt(page) : undefined;
         const parsedOrder = parseInt(order) === 1 || parseInt(order) === -1 ? parseInt(order) : undefined;
+        console.log(driver, parseBoolean(driver));
         const result = await getRides({
             country,
             city,
             page: parsedPage,
             order: parsedOrder,
             idUser,
-            passengerFilter: parseBoolean(passenger),
-            driverFilter: parseBoolean(driver),
+            passengerFilter: passenger !== undefined ? parseBoolean(passenger) : undefined,
+            driverFilter: driver !== undefined ? parseBoolean(driver) : undefined,
         });
         if (result.result.length === 0)
             throw new CustomError("No se encontraron resultados.", 404);
