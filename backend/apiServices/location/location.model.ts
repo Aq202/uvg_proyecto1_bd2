@@ -111,4 +111,15 @@ const getLocations = async ({
 	return { pages, total: count, result: createMultipleLocationsDto(locations) };
 };
 
-export { createLocation, updateLocation, deleteLocation, getLocations };
+const getLocationById = async (idLocation: string) => {
+	try {
+		const location = await LocationSchema.findById(idLocation);
+		if (!location) return null;
+		return createLocationDto(location);
+	} catch (ex: any) {
+		if (ex?.kind === "ObjectId") throw new CustomError("El id de la ubicación no es válido.", 400);
+		throw ex;
+	}
+};
+
+export { createLocation, updateLocation, deleteLocation, getLocations, getLocationById };
