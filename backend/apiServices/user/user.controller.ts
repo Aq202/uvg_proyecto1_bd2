@@ -66,4 +66,18 @@ const loginController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-export { createUserController, loginController, updateUserController };
+const getSessionUserController = async (req: AppRequest, res: AppResponse) => {
+	try {
+		if (!req.session) return;
+		const user = req.session;
+		res.send(user);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener datos de usuario.",
+		});
+	}
+};
+
+export { createUserController, loginController, updateUserController, getSessionUserController };
