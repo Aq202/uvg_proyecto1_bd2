@@ -43,7 +43,7 @@ const deleteLocationController = async (req, res) => {
     const idUser = req.session.id;
     try {
         await deleteLocation({ id: idLocation, idUser });
-        req.send({ ok: true });
+        res.send({ ok: true });
     }
     catch (ex) {
         await errorSender({
