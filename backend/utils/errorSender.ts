@@ -25,6 +25,7 @@ const errorSender = async ({
 		err = ex.message;
 		status = ex.status ?? 500;
 	}
+	console.log("Error manejado: \n", ex);
 	res.statusMessage = err;
 	res.status(status).send({ err, status, errorObj: ex });
 };
