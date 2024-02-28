@@ -86,6 +86,17 @@ const getRides = async ({
 				},
 			},
 		},
+		{
+			$addFields: {
+				isDriver: {
+					$cond: {
+						if: { $eq: ["$user._id", new ObjectId(idUser)] },
+						then: true,
+						else: false,
+					},
+				},
+			},
+		},
 	];
 
 	// Agregar filtrado por ubicación

@@ -11,6 +11,7 @@ const createRideDto = (resource: any): Ride => {
 		datetime,
 		vehicle,
 		isPassenger,
+		isDriver,
 	} = resource?._doc ?? resource;
 	return {
 		id: resource?._id?.valueOf() ?? resource.id,
@@ -24,6 +25,7 @@ const createRideDto = (resource: any): Ride => {
 		datetime,
 		vehicle,
 		isPassenger,
+		isDriver,
 	};
 };
 

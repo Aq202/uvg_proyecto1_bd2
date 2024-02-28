@@ -54,6 +54,17 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
                 },
             },
         },
+        {
+            $addFields: {
+                isDriver: {
+                    $cond: {
+                        if: { $eq: ["$user._id", new ObjectId(idUser)] },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
     ];
     // Agregar filtrado por ubicación
     const conditions = [];
@@ -74,7 +85,6 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
             conditions.push({ passengers: { $not: { $elemMatch: { _id: new ObjectId(idUser) } } } });
     }
     if (driverFilter !== undefined && idUser) {
-        console.log(driverFilter);
         if (driverFilter)
             conditions.push({ "user._id": new ObjectId(idUser) });
         else
