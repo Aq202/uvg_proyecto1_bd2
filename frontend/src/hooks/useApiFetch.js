@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import useRefreshAccessToken from './useRefreshAccessToken';
 
 function useApiFetch() {
-  const refreshAccessToken = useRefreshAccessToken();
+  const refreshAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
   const [refreshedToken, setRefreshedToken] = useState(null);
 
   const apiFetch = async ({
