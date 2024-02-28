@@ -1,6 +1,6 @@
 const parseBoolean = (value: any) => {
-	if (value === true || value === "true" || value === 1) return true;
-	if (value === false || value === "false" || value === 0) return false;
+	if (value === true || value === "true" || parseInt(value) === 1) return true;
+	if (value === false || value === "false" || parseInt(value) === 0) return false;
 	return !!value;
 };
 
