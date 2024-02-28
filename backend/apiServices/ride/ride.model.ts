@@ -74,12 +74,14 @@ const getRides = async ({
 		{
 			$addFields: {
 				isPassenger: {
-					$cond: {
-						if: {
-							$in: [idUser, "$passengers._id"],
+					$anyElementTrue: {
+						$map: {
+							input: "$passengers",
+							as: "passengers",
+							in: {
+								$eq: ["$$passengers._id", new ObjectId(idUser)],
+							},
 						},
-						then: true,
-						else: false,
 					},
 				},
 			},
