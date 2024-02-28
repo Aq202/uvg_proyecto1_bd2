@@ -1,10 +1,17 @@
+import { useEffect } from 'react';
 import { serverHost } from '../config';
 import useFetch from './useFetch';
+import consts from '../helpers/consts';
 
 function useSignUp() {
   const {
     callFetch, result, error, loading,
   } = useFetch();
+
+  useEffect(() => {
+    if (!result?.id) return;
+    sessionStorage.setItem(consts.firstAccessKey, '');
+  }, [result]);
 
   const signup = async ({
     name, email, phone, password,

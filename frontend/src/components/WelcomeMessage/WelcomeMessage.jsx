@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { IoClose as CloseIcon } from 'react-icons/io5';
 import ConfettiGenerator from 'confetti-js';
-import logo from '../../assets/logo/Logo.png';
+import logo from '../../assets/logo/logo_blanco.png';
 import styles from './WelcomeMessage.module.css';
 import useSessionData from '../../hooks/useSessionData';
-import consts from '../../helpers/consts';
 
 function WelcomeMessage({ isOpen, close }) {
   const session = useSessionData();
@@ -55,16 +54,35 @@ function WelcomeMessage({ isOpen, close }) {
             />
             <img src={logo} alt="Logo asigbo" className={styles.logo} />
             <h1 className={styles.mainTitle}>
-              {`${session?.sex === consts.sex.masculine ? '¡Bienvenido' : '¡Bienvenida'} ${
-                session?.name
-              }!`}
+              {`¡Hola, ${session?.name}!`}
             </h1>
             <p className={styles.content}>
-              {`¡Te damos una calurosa bienvenida al nuevo y mejorado portal de ASIGBO! Estamos
-              encantados de que estés aquí, ${
-                session?.sex === consts.sex.masculine ? 'listo' : 'lista'
-              } para aprovechar al máximo las posibilidades que
-              esta herramienta tiene para ofrecerte.`}
+              ¡Te damos una calurosa bienvenida a
+              <span style={{ fontFamily: 'Open Sans', textTransform: 'uppercase' }}>
+                {' '}
+                Carpool
+                <span style={{ color: '#FFD600' }}>It</span>
+              </span>
+              , tu destino para
+              compartir viajes y hacer que cada trayecto cuente! 🚗✨
+              <br />
+              <br />
+              Imagina un mundo donde cada auto en la carretera tiene más de un
+              ocupante, reduciendo la congestión, disminuyendo las emisiones y
+              ahorrando dinero. ¡Eso es lo que estamos construyendo juntos!
+              <br />
+              <br />
+              Así que, únete a nosotros para viajes más eficientes, conexiones
+              significativas y un impacto positivo en nuestro planeta. ¡
+              <span style={{ fontFamily: 'Open Sans', textTransform: 'uppercase' }}>
+                Carpool
+                <span style={{ color: '#FFD600' }}>It </span>
+              </span>
+              es tu viaje, tu elección, nuestro futuro!
+              <br />
+              <br />
+              ¡Bienvenido a bordo y que tus viajes estén llenos de buenos momentos
+              y experiencias compartidas! 🌎🚗✨
             </p>
           </div>
         )}

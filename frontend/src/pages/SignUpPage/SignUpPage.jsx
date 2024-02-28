@@ -60,11 +60,33 @@ function SignUpPage() {
     setErrors((lastVal) => ({ ...lastVal, phone: 'El teléfono es obligatorio.' }));
     return false;
   };
-
   const validatePassword = () => {
-    if (form?.password?.trim().length > 0) return true;
-    setErrors((lastVal) => ({ ...lastVal, password: 'La contraseña es obligatoria.' }));
-    return false;
+    if (!form?.password?.trim().length || form?.password?.trim().length <= 0) {
+      setErrors((lastVal) => ({ ...lastVal, password: 'La contraseña es obligatoria.' }));
+      return false;
+    }
+    if (form?.repeatPassword !== form?.password) {
+      setErrors((lastVal) => ({ ...lastVal, password: 'Las contraseñas no coinciden.', repeatPassword: 'Las contraseñas no coinciden' }));
+      return false;
+    }
+    if (form?.password === form?.repeatPassword) {
+      delete errors.repeatPassword; delete errors.password;
+    }
+    return true;
+  };
+  const validateRepeatedPassword = () => {
+    if (!form?.repeatPassword?.trim().length || form?.repeatPassword?.trim().length <= 0) {
+      setErrors((lastVal) => ({ ...lastVal, repeatPassword: 'Debes verificar tu contraseña.' }));
+      return false;
+    }
+    if (form?.repeatPassword !== form?.password) {
+      setErrors((lastVal) => ({ ...lastVal, password: 'Las contraseñas no coinciden.', repeatPassword: 'Las contraseñas no coinciden' }));
+      return false;
+    }
+    if (form?.password === form?.repeatPassword) {
+      delete errors.repeatPassword; delete errors.password;
+    }
+    return true;
   };
 
   const handleSubmit = (e) => {
@@ -146,6 +168,17 @@ function SignUpPage() {
             value={form?.password}
             error={errors?.password}
             onBlur={validatePassword}
+            onFocus={clearError}
+            style={{ maxWidth: '560px' }}
+          />
+          <InputText
+            title="Confirmar Contraseña"
+            name="repeatPassword"
+            type="password"
+            onChange={handleFormChange}
+            value={form?.repeatPassword}
+            error={errors?.repeatPassword}
+            onBlur={validateRepeatedPassword}
             onFocus={clearError}
             style={{ maxWidth: '560px' }}
           />
