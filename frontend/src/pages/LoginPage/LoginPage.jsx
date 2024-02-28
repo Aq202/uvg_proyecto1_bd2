@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
 import waves from '../../assets/wave-haikei.svg';
 import logo from '../../assets/logo/Logo.png';
@@ -55,9 +56,9 @@ function LoginPage() {
   return (
     <div className={styles.loginPageContainer}>
       <div className={styles.formContainer}>
-        <img alt="ASIGBO logo" className={styles.logoAsigboMobile} src={logo} />
+        <img alt="CarpoolIt logo" className={styles.logoMobile} src={logo} />
         <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
-          <img alt="ASIGBO logo" className={styles.logoAsigbo} src={logo} />
+          <img alt="CarpoolIt logo" className={styles.logo} src={logo} />
           <h1>Iniciar sesión</h1>
           <span
             className={styles.infoSpan}
@@ -90,6 +91,12 @@ function LoginPage() {
             {!loading && (<button className={`${button} ${blue}`} type="submit">Iniciar sesión</button>)}
             {loading && <Spinner />}
           </div>
+          <p className={styles.newAccount}>
+            ¿No tienes una cuenta?
+            <Link className={styles.signUp} to="/signup">
+              ¡Regístrate aquí!
+            </Link>
+          </p>
         </form>
       </div>
       <div className={styles.bottomWaveWrapper}>

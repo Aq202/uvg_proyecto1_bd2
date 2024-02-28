@@ -1,4 +1,4 @@
-.loginPageContainer{
+.loginPageContainer {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -8,12 +8,12 @@
     position: relative;
 }
 
-.headerContainer{
+.headerContainer {
     width: 100vw;
 }
 
 
-.formContainer{
+.formContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,17 +27,18 @@
     min-width: 330px;
 }
 
-@media (min-aspect-ratio: 1/1){
+@media (min-aspect-ratio: 1/1) {
 
-    .logoMobile{
+    .logoMobile {
         display: none;
     }
 
-    .bottomWaveWrapper{
+    .bottomWaveWrapper {
         display: none;
     }
 
-    .backgroundWrapper{
+    .backgroundWrapper {
+        transform: rotateY(180deg);
         position: absolute;
         z-index: -5;
         width: 100%;
@@ -50,34 +51,34 @@
         background-size: cover;
     }
 
-    .backgroundWrapper::before{
+    .backgroundWrapper::before {
         content: "";
         position: absolute;
         width: 100%;
         height: 100%;
-        background-color: rgb(43, 43, 43,0.55);
+        background-color: rgb(43, 43, 43, 0.55);
     }
 
-    .wave{
+    .wave {
         display: none;
     }
-    
-    .waveBody{
+
+    .waveBody {
         display: none;
     }
 }
 
-@media (max-aspect-ratio: 1/1){
+@media (max-aspect-ratio: 1/1) {
 
-    .wavesWrapper{
+    .wavesWrapper {
         display: none;
     }
 
-    .bottomWaveWrapper{
+    .bottomWaveWrapper {
         display: none;
     }
 
-    .loginPageContainer{
+    .loginPageContainer {
         align-items: center;
         justify-content: center;
         align-content: center;
@@ -85,29 +86,29 @@
         position: relative;
     }
 
-    .formContainer{
+    .formContainer {
         height: 80%;
         width: 80%;
         padding: 0 0 30px 0;
         border-radius: 7px;
     }
 
-    .logo{
+    .logo {
         display: none;
     }
 
-    .logoMobile{
+    .logoMobile {
         width: 250px;
         height: 77.65px;
         margin: 35px;
     }
 
-    .backgroundWrapper{
-       display: none;
+    .backgroundWrapper {
+        display: none;
     }
 }
 
-.wavesWrapper{
+.wavesWrapper {
     height: 100%;
     max-width: 20%;
     z-index: 4;
@@ -116,11 +117,11 @@
     margin-left: -5px;
 }
 
-.waves{
+.waves {
     height: 100%;
 }
 
-.form{
+.form {
     width: 80%;
     display: flex;
     flex-direction: column;
@@ -129,7 +130,7 @@
 }
 
 
-.buttonWrapper{
+.buttonWrapper {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,29 +138,29 @@
     margin-top: 40px;
 }
 
-.infoSpan{
+.infoSpan {
     color: #565656;
     margin-top: 20px;
     text-align: center;
 }
 
-.newAccount{
+.newAccount {
     margin-top: 20px;
     text-align: center;
 }
 
-.signUp{
+.signUp {
     margin-left: 5px;
     color: #565656;
     cursor: pointer;
     text-align: center;
 }
 
-.signUp:hover{
+.signUp:hover {
     color: #2B2B2B;
 }
 
-.logo{
+.logo {
     width: 250px;
     height: auto;
     margin: 35px;
@@ -167,39 +168,49 @@
     margin-bottom: 0;
 }
 
-.errorMessage{
+.errorMessage {
     margin-top: 20px;
-    color:var(--error-color--);
+    color: var(--error-color--);
     text-align: center;
 }
 
-.waveBody{
+.waveBody {
     height: 2vh;
     background-color: var(--blue-theme-color--);
 }
-  
-@media only screen and (min-height: 770px){
 
-    .bottomWaveWrapper{
+@media only screen and (min-height: 770px) {
+
+    .bottomWaveWrapper {
         display: block;
     }
 
-    .waveBody{
-      height: 3vh;
-      width: 100%;
-      margin-top: -10px;
+    .waveBody {
+        height: 3vh;
+        width: 100%;
+        margin-top: -10px;
     }
 }
-  
 
-.wave{
+
+.wave {
     width: 100%;
 }
 
-.bottomWaveWrapper{
+.bottomWaveWrapper {
     width: 100vw;
     height: min-content;
     position: absolute;
     bottom: 0;
 }
 
+.phone {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    max-width: 100%;
+}
+
+.phone div:nth-child(1) {
+    width: 33%;
+}
