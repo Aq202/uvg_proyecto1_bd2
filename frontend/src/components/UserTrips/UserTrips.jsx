@@ -67,6 +67,7 @@ function UserTrips() {
       <div className={styles.tripsContainer}>
         {trips.map((trip) => (
           <Trip
+            key={trip.location}
             location={trip.location}
             originName={trip.originName}
             originAddress={trip.originAddress}
