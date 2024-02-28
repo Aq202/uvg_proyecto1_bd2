@@ -54,6 +54,17 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
                 },
             },
         },
+        {
+            $addFields: {
+                isDriver: {
+                    $cond: {
+                        if: { $eq: ["$user._id", new ObjectId(idUser)] },
+                        then: true,
+                        else: false,
+                    },
+                },
+            },
+        },
     ];
     // Agregar filtrado por ubicación
     const conditions = [];
@@ -67,11 +78,17 @@ const getRides = async ({ country, city, page, order, idUser, passengerFilter, d
             $or: [{ "startLocation.city": city }, { "arrivalLocation.city": city }],
         });
     }
-    if (passengerFilter && idUser) {
-        conditions.push({ passengers: { $elemMatch: { _id: idUser } } });
+    if (passengerFilter !== undefined && idUser) {
+        if (passengerFilter)
+            conditions.push({ passengers: { $elemMatch: { _id: new ObjectId(idUser) } } });
+        else
+            conditions.push({ passengers: { $not: { $elemMatch: { _id: new ObjectId(idUser) } } } });
     }
-    if (driverFilter && idUser) {
-        conditions.push({ "user._id": new ObjectId(idUser) });
+    if (driverFilter !== undefined && idUser) {
+        if (driverFilter)
+            conditions.push({ "user._id": new ObjectId(idUser) });
+        else
+            conditions.push({ "user._id": { $ne: new ObjectId(idUser) } });
     }
     if (conditions.length > 0)
         queryPipeline.push({ $match: { $and: conditions } });

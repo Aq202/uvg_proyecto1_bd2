@@ -51,8 +51,8 @@ const getRidesController = async (req, res) => {
             page: parsedPage,
             order: parsedOrder,
             idUser,
-            passengerFilter: parseBoolean(passenger),
-            driverFilter: parseBoolean(driver),
+            passengerFilter: passenger !== undefined ? parseBoolean(passenger) : undefined,
+            driverFilter: driver !== undefined ? parseBoolean(driver) : undefined,
         });
         if (result.result.length === 0)
             throw new CustomError("No se encontraron resultados.", 404);

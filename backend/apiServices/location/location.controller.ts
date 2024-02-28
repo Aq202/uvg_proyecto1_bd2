@@ -51,7 +51,7 @@ const deleteLocationController = async (req: AppRequest, res: AppResponse) => {
 	try {
 		await deleteLocation({ id: idLocation, idUser });
 
-		req.send({ ok: true });
+		res.send({ ok: true });
 	} catch (ex) {
 		await errorSender({
 			res,

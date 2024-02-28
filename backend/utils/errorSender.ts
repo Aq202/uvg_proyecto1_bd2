@@ -1,7 +1,4 @@
-import config from "config";
 import CustomError from "./customError.js";
-
-const sendErrorObj = config.get("sendErrorObj");
 
 /**
  * Se encarga del empaquetamiento y envío uniforme del error.
@@ -29,7 +26,7 @@ const errorSender = async ({
 		status = ex.status ?? 500;
 	}
 	res.statusMessage = err;
-	res.status(status).send({ err, status, errorObj: sendErrorObj ? ex : undefined });
+	res.status(status).send({ err, status, errorObj: ex });
 };
 
 export default errorSender;
