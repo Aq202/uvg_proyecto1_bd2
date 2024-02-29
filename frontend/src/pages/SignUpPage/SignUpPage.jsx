@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Spinner from '../../components/Spinner/Spinner';
 import waves from '../../assets/wave-haikei.svg';
 import logo from '../../assets/logo/Logo.png';
@@ -19,17 +19,23 @@ de useSignUp para llamar a la API y obtener un access token. */
 function SignUpPage() {
   const [form, setForm] = useState({ prefix: '+502' });
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
   const {
     signup, success, error, loading,
   } = useSignUp();
   const {
-    login, error: loginError, loading: loginLoading,
+    login, success: loginSuccess, error: loginError, loading: loginLoading,
   } = useLogin();
 
   useEffect(() => {
     if (error || !success) return;
     login({ email: form.email, password: form.password });
   }, [success]);
+
+  useEffect(() => {
+    if (loginError || !loginSuccess) return;
+    navigate('/');
+  }, [loginSuccess]);
 
   const handleFormChange = (e) => {
     const field = e.target.name;
@@ -83,8 +89,9 @@ function SignUpPage() {
       setErrors((lastVal) => ({ ...lastVal, password: 'Las contraseñas no coinciden.', repeatPassword: 'Las contraseñas no coinciden' }));
       return false;
     }
-    if (form?.password === form?.repeatPassword) {
-      delete errors.repeatPassword; delete errors.password;
+    if (form?.repeatPassword === form?.password) {
+      delete errors.repeatPassword;
+      delete errors.password;
     }
     return true;
   };

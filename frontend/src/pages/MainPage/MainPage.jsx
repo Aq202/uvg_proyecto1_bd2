@@ -6,6 +6,7 @@ import BottomWave from '../../components/BottomWave';
 import UserTrips from '../../components/UserTrips';
 import FindTrips from '../../components/FindTrips';
 import Places from '../../components/Places/Places';
+import Profile from '../../components/Profile';
 
 function MainPage() {
   const [currentSection, switchSection] = toggleNavBar();
@@ -22,7 +23,7 @@ function MainPage() {
         {currentSection === 'userTrips' && <UserTrips />}
         {currentSection === 'findTrips' && <FindTrips />}
         {currentSection === 'places' && <Places switchSection={switchSection} />}
-        {currentSection === 'editPlace' && <h1>Editar Lugar</h1>}
+        {currentSection === 'profile' && <Profile />}
       </div>
     </div>
   );
