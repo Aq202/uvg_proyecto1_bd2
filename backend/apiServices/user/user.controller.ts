@@ -9,12 +9,50 @@ import CustomError from "../../utils/customError.js";
 import fs from "fs";
 import { GridFSBucket } from "mongodb";
 
+const uploadUserImage = (idUser:string, file:UploadedFile) => {
+
+	return new Promise((resolve, reject) => {
+
+
+		let gfs = Grid(connection.db, mongo);
+		gfs.collection("images");
+
+		const { fileName } = file;
+		// @ts-ignore
+		const filePath = `${global.dirname}/files/${fileName}`;
+
+		const bucket = new GridFSBucket(connection.db, { bucketName: "images" });
+
+		const uploadStream = bucket.openUploadStream(idUser);
+		fs.createReadStream(filePath).pipe(uploadStream);
+
+		uploadStream.on("error", async (error) => {
+			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
+			reject(error)
+		});
+
+		uploadStream.on("finish", () => {
+			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
+			resolve(1);
+		});
+	
+	})
+};
+
 const createUserController = async (req: AppRequest, res: AppResponse) => {
 	const { name, email, phone, password } = req.body;
 
+	
 	try {
+		
+		const file = req.uploadedFiles?.[0];
+		if (!file) throw new CustomError("No se proporionó una foto de perfil.", 400);
+
+
 		const passwordHash = hash.sha256().update(password).digest("hex");
 		const user = await createUser({ name, email, phone, password: passwordHash });
+
+		await uploadUserImage(user.id, file)
 
 		res.send(user);
 	} catch (ex) {
@@ -85,44 +123,6 @@ const getSessionUserController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
-const uploadUserImageController = async (req: AppRequest, res: AppResponse) => {
-	try {
-		if (!req.session) return;
-		if (!req.uploadedFiles) throw new CustomError("No se proporionó una imagen.", 400);
-
-		const user = req.session;
-		const file: UploadedFile = req.uploadedFiles[0];
-
-		let gfs = Grid(connection.db, mongo);
-		gfs.collection("images");
-
-		const { fileName } = file;
-		// @ts-ignore
-		const filePath = `${global.dirname}/files/${fileName}`;
-
-		const bucket = new GridFSBucket(connection.db, { bucketName: "images" });
-
-		const uploadStream = bucket.openUploadStream(user.id);
-		fs.createReadStream(filePath).pipe(uploadStream);
-
-		uploadStream.on("error", async (error) => {
-			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
-			await errorSender({ res, ex: error, defaultError: "Error al cargar imagen del usuario." });
-		});
-
-		uploadStream.on("finish", () => {
-			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
-			res.send({ ok: true });
-		});
-	} catch (ex) {
-		await errorSender({
-			res,
-			ex,
-			defaultError: "Ocurrio un error al cargar foto del usuario.",
-		});
-	}
-};
-
 const getUserImageController = async (req: AppResponse, res: AppRequest) => {
 	try {
 		const { idUser } = req.params;
@@ -161,6 +161,5 @@ export {
 	loginController,
 	updateUserController,
 	getSessionUserController,
-	uploadUserImageController,
 	getUserImageController,
 };
