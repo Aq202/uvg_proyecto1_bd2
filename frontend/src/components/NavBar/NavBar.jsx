@@ -7,6 +7,11 @@ import { BsPersonRaisedHand as PersonIcon } from 'react-icons/bs';
 import styles from './NavBar.module.css';
 
 function NavBar({ handleNavBar }) {
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = '/';
+  };
+
   return (
     <div className={styles.mainContainer}>
 
@@ -17,22 +22,26 @@ function NavBar({ handleNavBar }) {
 
       <div className={styles.bar}>
 
-        <div className={styles.section} onClick={() => handleNavBar('findTrips')}>
-          <p>Encontrar viajes</p>
+        <div className={styles.section} onClick={handleLogout}>
+          <p>Cerrar Sesión</p>
         </div>
+        <div className={styles.options}>
+          <div className={styles.section} onClick={() => handleNavBar('findTrips')}>
+            <p>Encontrar viajes</p>
+          </div>
 
-        <div className={styles.section} onClick={() => handleNavBar('userTrips')}>
-          <p>Mis viajes</p>
+          <div className={styles.section} onClick={() => handleNavBar('userTrips')}>
+            <p>Mis viajes</p>
+          </div>
+
+          <div className={styles.section} onClick={() => handleNavBar('places')}>
+            <p>Lugares</p>
+          </div>
+
+          <div className={styles.section} onClick={() => handleNavBar('profile')}>
+            <p>Perfil</p>
+          </div>
         </div>
-
-        <div className={styles.section} onClick={() => handleNavBar('places')}>
-          <p>Lugares</p>
-        </div>
-
-        <div className={styles.section} onClick={() => handleNavBar('profile')}>
-          <p>Perfil</p>
-        </div>
-
       </div>
     </div>
   );

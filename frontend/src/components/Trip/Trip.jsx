@@ -4,6 +4,7 @@ import { FaLongArrowAltRight as ArrowIcon } from 'react-icons/fa';
 import styles from './Trip.module.css';
 import Button from '../Button';
 import useFetch from '../../hooks/useFetch';
+import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
 
 function Trip({
@@ -20,9 +21,10 @@ function Trip({
   callback,
 }) {
   const { callFetch: joinRide, result: resultPost, loading: loadingPost } = useFetch();
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
+  const { callFetch: leaveRide, result: resultDelete, loading: loadingDelete } = useFetch();
+  const token = useToken();
 
-  const jointrip = () => {
+  const joinTrip = () => {
     joinRide({
       uri: `${serverHost}/ride/${id}/assign`,
       headers: { authorization: token },
@@ -31,9 +33,19 @@ function Trip({
     });
   };
 
+  const leaveTrip = () => {
+    leaveRide({
+      uri: `${serverHost}/ride/${id}/assignment`,
+      headers: { authorization: token },
+      method: 'DELETE',
+      parse: false,
+    });
+  };
+
   useEffect(() => {
-    if (resultPost) callback();
-  }, [resultPost]);
+    if (!resultPost && !resultDelete) return;
+    callback();
+  }, [resultPost, resultDelete]);
 
   return (
     <div className={styles.tripContainer}>
@@ -63,7 +75,7 @@ function Trip({
           <p className={styles.infoDescription}>{time}</p>
         </div>
       </div>
-      <Button className={styles.button} text={joined ? 'Salir' : 'Unirse'} red={joined} onClick={jointrip} disabled={loadingPost} />
+      <Button className={styles.button} text={joined ? 'Salir' : 'Unirse'} red={joined} onClick={joined ? leaveTrip : joinTrip} disabled={loadingPost || loadingDelete} />
     </div>
   );
 }

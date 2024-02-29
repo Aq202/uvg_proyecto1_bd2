@@ -8,6 +8,7 @@ import PopUp from '../PopUp/PopUp';
 import InputText from '../InputText';
 import Button from '../Button';
 import useFetch from '../../hooks/useFetch';
+import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
 
 function Places() {
@@ -20,7 +21,7 @@ function Places() {
   const { callFetch: putLocation, result: resultPut, loading: loadingPut } = useFetch();
   const { callFetch: deleteLocation, result: resultDelete } = useFetch();
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
+  const token = useToken();
 
   const editPlace = (id, name, address, city, country) => {
     setPlaceToEdit({
