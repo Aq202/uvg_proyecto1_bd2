@@ -1,6 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { serverHost } from '../config';
 
 /**
  * @context SessionContext: Contexto de la sesión iniciada por el usuario.
@@ -36,18 +35,9 @@ function SessionProvider({ children }) {
   };
 
   useEffect(() => {
-    // obtener access token inicial
-    const uri = `${serverHost}/session/accessToken`;
-    (async () => {
-      try {
-        const res = await fetch(uri);
-        if (!res.ok) throw res;
-        const { accessToken: receivedAccessToken } = await res.json();
-        setAccessToken(receivedAccessToken);
-      } catch (ex) {
-        setAccessToken(null);
-      }
-    })();
+    const receivedAccessToken = localStorage.getItem('accessToken');
+    if (receivedAccessToken && receivedAccessToken !== 'undefined') setAccessToken(receivedAccessToken);
+    else setAccessToken(null);
   }, []);
 
   return <SessionContext.Provider value={data}>{children}</SessionContext.Provider>;
