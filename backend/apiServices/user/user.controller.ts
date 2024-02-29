@@ -105,9 +105,9 @@ const uploadUserImageController = async (req: AppRequest, res: AppResponse) => {
 		const uploadStream = bucket.openUploadStream(user.id);
 		fs.createReadStream(filePath).pipe(uploadStream);
 
-		uploadStream.on("error", (error) => {
+		uploadStream.on("error", async (error) => {
 			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
-			throw error;
+			await errorSender({ res, ex: error, defaultError: "Error al cargar imagen del usuario." });
 		});
 
 		uploadStream.on("finish", () => {
@@ -124,12 +124,11 @@ const uploadUserImageController = async (req: AppRequest, res: AppResponse) => {
 };
 
 const getUserImageController = async (req: AppResponse, res: AppRequest) => {
-	if (!req.session) return;
 	try {
-		const user = req.session;
+		const { idUser } = req.params;
 
 		const bucket = new GridFSBucket(connection.db, { bucketName: "images" });
-		const downloadStream = bucket.openDownloadStreamByName(user.id);
+		const downloadStream = bucket.openDownloadStreamByName(idUser);
 
 		// Construir respuesta con chunks recibidos
 		downloadStream.on("data", (chunk) => {
@@ -141,8 +140,13 @@ const getUserImageController = async (req: AppResponse, res: AppRequest) => {
 			res.end();
 		});
 
-		downloadStream.on("error", (error) => {
-			throw error;
+		downloadStream.on("error", async (error) => {
+			await errorSender({
+				res,
+				ex: error,
+				defaultError: "No se encontró la imagen del usuario.",
+				defaultStatus: 404,
+			});
 		});
 	} catch (ex) {
 		await errorSender({
