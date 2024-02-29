@@ -14,14 +14,18 @@ function useSignUp() {
   }, [result]);
 
   const signup = async ({
-    name, email, phone, password,
+    name, email, phone, password, photo,
   }) => {
     const uri = `${serverHost}/user`;
-    const body = JSON.stringify({
-      name, email, phone, password,
-    });
+    const body = new FormData();
+
+    body.append('name', name);
+    body.append('email', email);
+    body.append('phone', phone);
+    body.append('password', password);
+    body.append('photo', photo);
     callFetch({
-      uri, method: 'POST', body,
+      uri, method: 'POST', body, removeContentType: true,
     });
   };
 
