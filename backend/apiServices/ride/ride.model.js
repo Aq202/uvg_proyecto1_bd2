@@ -129,10 +129,10 @@ const assignUserToRide = async ({ user, idRide }) => {
 };
 const removeUserFromRide = async ({ idUser, idRide }) => {
     try {
-        const { modifiedCount, matchedCount } = await RideSchema.updateOne({ _id: idRide }, { passengers: { $pull: { _id: idUser } } });
+        const { acknowledged, matchedCount } = await RideSchema.updateOne({ _id: idRide }, { passengers: { $pull: { _id: idUser } } });
         if (matchedCount === 0)
             throw new CustomError("No se encontraron coincidencias.", 404);
-        if (modifiedCount === 0)
+        if (!acknowledged)
             throw new CustomError("No se pudo remover al usuario del ride.", 500);
     }
     catch (ex) {
