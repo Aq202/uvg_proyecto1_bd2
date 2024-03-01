@@ -1,5 +1,9 @@
 .mainContainer {
     width: 100%;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    background-color: #ffffff;
 }
 
 .iconContainer {
@@ -27,6 +31,7 @@
     background-color: #2B2B2B;
     color: #ffffff;
     padding: 0 15px;
+    text-align: center;
 }
 
 .section {

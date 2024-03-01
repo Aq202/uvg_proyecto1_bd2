@@ -19,6 +19,7 @@ function Trip({
   time,
   joined,
   callback,
+  owner,
 }) {
   const { callFetch: joinRide, result: resultPost, loading: loadingPost } = useFetch();
   const { callFetch: leaveRide, result: resultDelete, loading: loadingDelete } = useFetch();
@@ -75,7 +76,7 @@ function Trip({
           <p className={styles.infoDescription}>{time}</p>
         </div>
       </div>
-      <Button className={styles.button} text={joined ? 'Salir' : 'Unirse'} red={joined} onClick={joined ? leaveTrip : joinTrip} disabled={loadingPost || loadingDelete} />
+      {!owner && <Button className={styles.button} text={joined ? 'Salir' : 'Unirse'} red={joined} onClick={joined ? leaveTrip : joinTrip} disabled={loadingPost || loadingDelete} />}
     </div>
   );
 }
@@ -92,6 +93,11 @@ Trip.propTypes = {
   time: PropTypes.string.isRequired,
   joined: PropTypes.bool.isRequired,
   callback: PropTypes.func.isRequired,
+  owner: PropTypes.bool,
+};
+
+Trip.defaultProps = {
+  owner: false,
 };
 
 export default Trip;
