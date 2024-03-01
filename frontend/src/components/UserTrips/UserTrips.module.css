@@ -31,15 +31,40 @@
     margin-top: 16px;
 }
 
+.newButton {
+    margin-left: 20px;
+}
+
+.createTrip{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.createButton{
+    margin-top: 16px;
+}
+
+.createDescription{
+    margin: 0;
+}
+
+.inputSelect {
+    margin-top: 25px;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .filtersContainer {
         margin-left: 0;
     }
-}
 
-@media (max-aspect-ratio: 1/1) {
     .headerSection {
         flex-direction: column;
         margin-bottom: 16px;
+    }
+
+    .newButton {
+        margin-bottom: 20px;
+        margin-left: 0;
     }
 }

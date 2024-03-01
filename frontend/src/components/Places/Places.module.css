@@ -47,6 +47,18 @@
     margin-top: 16px;
 }
 
+.createDescription{
+    margin: 0;
+}
+
+.newButton {
+    margin-left: 20px;
+}
+
+.inputSelect {
+    margin-top: 25px;
+}
+
 @media (max-aspect-ratio: 1/1) {
     .filtersContainer {
         margin-left: 0;
@@ -59,5 +71,10 @@
     .headerSection {
         flex-direction: column;
         margin-bottom: 16px;
+    }
+
+    .newButton {
+        margin-bottom: 20px;
+        margin-left: 0;
     }
 }
