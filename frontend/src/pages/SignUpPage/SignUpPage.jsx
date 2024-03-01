@@ -99,7 +99,8 @@ function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     clearErrors();
-    if (!(validateEmail() && validatePassword())) return;
+    if (!(validateEmail() && validatePassword()
+      && !validateName() && !validatePhone() && !validateRepeatedPassword())) return;
     signup({
       name: form.name,
       email: form.email,

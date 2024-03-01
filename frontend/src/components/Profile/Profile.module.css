@@ -1,34 +1,61 @@
-.mainContainer{
+.mainContainer {
     padding: 4%;
     display: flex;
     flex-direction: column;
 }
 
-.headerSection{
+.headerSection {
     display: flex;
     width: 100%;
     align-items: center;
 }
 
-.title{
+.title {
     font-size: 24px;
     font-weight: bold;
 }
 
-.filtersContainer{
+.filtersContainer {
     display: flex;
     flex-direction: row;
     margin-left: auto;
 }
 
-.filterContainer{
+.filterContainer {
     display: flex;
     margin: 0 5px 0 5px;
 }
 
-.pagination{
+.pagination {
     align-self: center;
     margin-top: 16px;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+}
+
+.form input {
+    max-width: 100% !important;
+}
+
+.phone {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 25px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.phone div {
+    margin: 0;
+}
+
+.phone div:nth-child(1) {
+    width: 33%;
 }
 
 @media (max-aspect-ratio: 1/1) {
