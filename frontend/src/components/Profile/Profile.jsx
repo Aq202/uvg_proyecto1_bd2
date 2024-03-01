@@ -281,7 +281,6 @@ function Profile() {
                   className={`${button} ${blue}`}
                   type="button"
                   onClick={() => {
-                    console.log(userData);
                     setEditable(false);
                     setUserInfo(userData);
                   }}
