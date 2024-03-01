@@ -6,12 +6,35 @@ import Trip from '../Trip';
 import useFetch from '../../hooks/useFetch';
 import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
+import Button from '../Button';
+import InputDate from '../InputDate';
+import PopUp from '../PopUp/PopUp';
+import usePopUp from '../../hooks/usePopUp';
+import InputText from '../InputText';
+import Spinner from '../Spinner';
 
 function UserTrips() {
   const [filters, setFilters] = useState({ role: 'driver' });
   const [currentPage, setCurrentPage] = useState(0);
   const [trips, setTrips] = useState([]);
-  const { callFetch: getRides, result: resultGet, error: errorGet } = useFetch();
+  const [rideToCreate, setRideToCreate] = useState(false);
+  const [isCreateOpen, openCreate, closeCreate] = usePopUp();
+  const {
+    callFetch: fetchLocationsCreate,
+    result: resultGetLocationsCreate,
+    error: errorGetLocationsCreate,
+    loading: loadingGetLocationsCreate,
+  } = useFetch();
+  const {
+    callFetch: getRides,
+    result: resultGet,
+    error: errorGet,
+    loading: loadingGet,
+  } = useFetch();
+  const { callFetch: postRide, result: resultPost, loading: loadingTrip } = useFetch();
+  const { callFetch: fetchCountries, result: resultCountries } = useFetch();
+  const { callFetch: fetchCities, result: resultCities } = useFetch();
+  const [errors, setErrors] = useState({});
 
   const token = useToken();
 
@@ -35,6 +58,90 @@ function UserTrips() {
     // Para asegurar el formato deseado, podrías hacer un ajuste manual si es necesario
     // Esto es un ejemplo y podría necesitar ajustes dependiendo del idioma o la zona horaria
     return fechaHoraFormateada.replace(/\//g, '-').replace(',', '');
+  };
+
+  const clearError = (e) => {
+    setErrors((lastVal) => ({ ...lastVal, [e.target.name]: null }));
+  };
+
+  const validateStartLocation = () => {
+    const value = rideToCreate.idStartLocation;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, idStartLocation: 'Se necesita un lugar de salida' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateArrivalLocation = () => {
+    const value = rideToCreate.idArrivalLocation;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, idArrivalLocation: 'Se necesita un lugar destino' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateVehicleType = () => {
+    const value = rideToCreate.vehicleType;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, vehicleType: 'Se necesita un tipo de vehículo' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateVehicleId = () => {
+    const value = rideToCreate.vehicleIdentification;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, vehicleIdentification: 'Se necesita un número de placa' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateVehicleColor = () => {
+    const value = rideToCreate.vehicleColor;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, vehicleColor: 'Se necesita un color de vehículo' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateDate = () => {
+    const value = rideToCreate.datetime;
+
+    if (!(value?.length > 0)) {
+      setErrors((lastVal) => ({ ...lastVal, datetime: 'Se necesita una fecha de salida' }));
+      return false;
+    }
+
+    return true;
+  };
+
+  const getCountries = () => {
+    fetchCountries({
+      uri: `${serverHost}/location/countries?fromUser=true`,
+      headers: { authorization: token },
+    });
+  };
+
+  const getCities = (country) => {
+    fetchCities({
+      uri: `${serverHost}/location/cities?fromUser=true&country=${country}`,
+      headers: { authorization: token },
+    });
   };
 
   const getUserTrips = () => {
@@ -61,11 +168,49 @@ function UserTrips() {
     });
   };
 
+  const getLocationsCreate = () => {
+    fetchLocationsCreate({
+      uri: `${serverHost}/location?`,
+      headers: { authorization: token },
+    });
+  };
+
+  const postTrip = () => {
+    let hasError = false;
+
+    if (!validateArrivalLocation()) hasError = true;
+    if (!validateStartLocation()) hasError = true;
+    if (!validateDate()) hasError = true;
+    if (!validateVehicleId()) hasError = true;
+    if (!validateVehicleType()) hasError = true;
+    if (!validateVehicleColor()) hasError = true;
+
+    if (hasError) return;
+
+    postRide({
+      uri: `${serverHost}/ride`,
+      headers: { authorization: token },
+      body: JSON.stringify(rideToCreate),
+      method: 'POST',
+      parse: false,
+    });
+  };
+
   const refreshTrips = () => {
     setTrips([]);
     setFilters({});
     getUserTrips();
   };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setRideToCreate((prev) => ({ ...prev, [name]: value }));
+  };
+
+  useEffect(() => {
+    if (!rideToCreate) return;
+    openCreate();
+  }, [rideToCreate]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -84,14 +229,33 @@ function UserTrips() {
   }, [resultGet]);
 
   useEffect(() => {
+    if (!resultPost) return;
+    refreshTrips();
+    closeCreate();
+  }, [resultPost]);
+
+  useEffect(() => {
     if (filters.role === '') return;
     setTrips([]);
     getUserTrips();
   }, [currentPage, filters]);
 
   useEffect(() => {
+    if (!isCreateOpen) return;
+    getLocationsCreate();
+    setRideToCreate({});
+    setErrors({});
+  }, [isCreateOpen]);
+
+  useEffect(() => {
     getUserTrips();
+    getLocationsCreate();
+    getCountries();
   }, []);
+
+  useEffect(() => {
+    if (filters.country !== undefined && filters.country !== '') getCities(filters.country);
+  }, [filters.country]);
 
   return (
     <div className={styles.mainContainer}>
@@ -100,21 +264,28 @@ function UserTrips() {
 
         <p className={styles.title}>Mis Viajes</p>
 
+        <Button text="Nuevo" className={styles.newButton} onClick={openCreate} />
+
         <div className={styles.filtersContainer}>
 
+          {resultCountries && (
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'direccion1', title: 'País 1' }, { value: 'direccion2', title: 'País 2' }]}
+              options={resultCountries.map((country) => (
+                { value: country, title: country }))}
               name="country"
               onChange={handleFilterChange}
               placeholder="País"
               value={filters?.country}
             />
           </div>
+          )}
 
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'direccion1', title: 'Ciudad 1' }, { value: 'direccion2', title: 'Ciudad 2' }]}
+              options={filters.country !== undefined && filters.countries !== '' && resultCities
+                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                : []}
               name="city"
               onChange={handleFilterChange}
               placeholder="Ciudad"
@@ -149,20 +320,107 @@ function UserTrips() {
               time={readDate(trip.datetime)}
               joined={trip.isPassenger}
               callback={refreshTrips}
+              owner={trip.isDriver}
             />
           ))}
         </div>
       )}
 
       {errorGet && <p>No se encontraron resultados</p>}
+      {loadingGet && <Spinner />}
 
       <Pagination
-        count={0}
+        count={resultGet?.pages ?? 0}
         siblingCount={2}
         className={styles.pagination}
         onChange={handlePageChange}
         page={currentPage + 1}
       />
+
+      {isCreateOpen && (
+      <PopUp close={closeCreate} closeWithBackground>
+        <div className={styles.createTrip}>
+          {resultGetLocationsCreate && (
+            <>
+              <h2 className={styles.creteTripTitle}>Crear viaje</h2>
+              <p className={styles.createDescription}>Crea un viaje del que serás el conductor</p>
+              <InputSelect
+                className={styles.inputSelect}
+                title="Lugar de salida"
+                options={resultGetLocationsCreate.result.map((location) => (
+                  { value: location.id, title: location.name }))}
+                name="idStartLocation"
+                value={rideToCreate.idStartLocation}
+                onChange={handleFormChange}
+                error={errors.idStartLocation}
+                onBlur={validateStartLocation}
+                onFocus={clearError}
+              />
+              <InputSelect
+                className={styles.inputSelect}
+                title="Lugar de llegada"
+                options={resultGetLocationsCreate.result.map((location) => (
+                  { value: location.id, title: location.name }))}
+                name="idArrivalLocation"
+                value={rideToCreate.idArrivalLocation}
+                onChange={handleFormChange}
+                error={errors.idArrivalLocation}
+                onBlur={validateArrivalLocation}
+                onFocus={clearError}
+              />
+              <InputDate
+                title="Fecha de salida"
+                name="datetime"
+                onChange={handleFormChange}
+                error={errors.datetime}
+                onBlur={validateDate}
+                onFocus={clearError}
+              />
+              <InputSelect
+                className={styles.inputSelect}
+                title="Vehículo de salida"
+                options={[
+                  { value: 'Sedan', title: 'Sedan' },
+                  { value: 'SUV', title: 'SUV' },
+                  { value: 'Pick-up', title: 'Pick-up' },
+                  { value: 'Otro', title: 'Otro' }]}
+                name="vehicleType"
+                value={rideToCreate.vehicleType}
+                onChange={handleFormChange}
+                error={errors.vehicleType}
+                onBlur={validateVehicleType}
+                onFocus={clearError}
+              />
+              <InputText
+                title="Número de placa"
+                name="vehicleIdentification"
+                value={rideToCreate.vehicleIdentification}
+                onChange={handleFormChange}
+                error={errors.vehicleIdentification}
+                onBlur={validateVehicleId}
+                onFocus={clearError}
+              />
+              <InputText
+                title="Color del vehículo"
+                name="vehicleColor"
+                value={rideToCreate.vehicleColor}
+                onChange={handleFormChange}
+                error={errors.vehicleColor}
+                onBlur={validateVehicleColor}
+                onFocus={clearError}
+              />
+              <Button text="Crear" className={styles.createButton} onClick={postTrip} disabled={loadingTrip} />
+            </>
+          )}
+          {errorGetLocationsCreate && (
+          <p className={styles.createDescription}>
+            Ocurió un error al obtener las ubicaciones del usuario
+          </p>
+          )}
+          {loadingGetLocationsCreate && <Spinner />}
+        </div>
+      </PopUp>
+      )}
 
     </div>
   );

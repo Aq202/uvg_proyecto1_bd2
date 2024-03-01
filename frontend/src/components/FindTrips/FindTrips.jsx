@@ -6,14 +6,36 @@ import Trip from '../Trip';
 import useFetch from '../../hooks/useFetch';
 import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
+import Spinner from '../Spinner';
 
 function FindTrips() {
   const [filters, setFilters] = useState({ role: 'none' });
   const [currentPage, setCurrentPage] = useState(0);
-  const { callFetch: getRides, result: resultGet, error: errorGet } = useFetch();
+  const {
+    callFetch: getRides,
+    result: resultGet,
+    error: errorGet,
+    loading: loadingGet,
+  } = useFetch();
   const [trips, setTrips] = useState([]);
+  const { callFetch: fetchCountries, result: resultCountries } = useFetch();
+  const { callFetch: fetchCities, result: resultCities } = useFetch();
 
   const token = useToken();
+
+  const getCountries = () => {
+    fetchCountries({
+      uri: `${serverHost}/location/countries?fromUser=true`,
+      headers: { authorization: token },
+    });
+  };
+
+  const getCities = (country) => {
+    fetchCities({
+      uri: `${serverHost}/location/cities?fromUser=true&country=${country}`,
+      headers: { authorization: token },
+    });
+  };
 
   const getTrips = () => {
     const { country, city, role } = filters;
@@ -90,7 +112,12 @@ function FindTrips() {
 
   useEffect(() => {
     getTrips();
+    getCountries();
   }, []);
+
+  useEffect(() => {
+    if (filters.country !== undefined && filters.country !== '') getCities(filters.country);
+  }, [filters.country]);
 
   return (
     <div className={styles.mainContainer}>
@@ -101,19 +128,24 @@ function FindTrips() {
 
         <div className={styles.filtersContainer}>
 
+          {resultCountries && (
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'direccion1', title: 'País 1' }, { value: 'direccion2', title: 'País 2' }]}
+              options={resultCountries.map((country) => (
+                { value: country, title: country }))}
               name="country"
               onChange={handleFilterChange}
               placeholder="País"
               value={filters?.country}
             />
           </div>
+          )}
 
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'direccion1', title: 'Ciudad 1' }, { value: 'direccion2', title: 'Ciudad 2' }]}
+              options={filters.country !== undefined && filters.countries !== '' && resultCities
+                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                : []}
               name="city"
               onChange={handleFilterChange}
               placeholder="Ciudad"
@@ -148,15 +180,17 @@ function FindTrips() {
               time={readDate(trip.datetime)}
               joined={trip.isPassenger}
               callback={refreshTrips}
+              owner={trip.isDriver}
             />
           ))}
         </div>
       )}
 
       {errorGet && <p>No se encontraron resultados</p>}
+      {loadingGet && <Spinner />}
 
       <Pagination
-        count={0}
+        count={resultGet?.pages ?? 0}
         siblingCount={2}
         className={styles.pagination}
         onChange={handlePageChange}
