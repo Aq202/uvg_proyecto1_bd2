@@ -6,6 +6,8 @@ import useToken from './useToken';
  * ¡Alerta! Es null en un inicio.
  */
 function useSessionData() {
+  const userData = sessionStorage.getItem('userData');
+  if (userData) return JSON.parse(userData);
   const token = useToken();
   return token ? getTokenPayload(token) : null;
 }

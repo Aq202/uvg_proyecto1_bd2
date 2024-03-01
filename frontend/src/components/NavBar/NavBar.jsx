@@ -9,6 +9,7 @@ import styles from './NavBar.module.css';
 function NavBar({ handleNavBar }) {
   const handleLogout = () => {
     localStorage.clear();
+    sessionStorage.clear();
     window.location.href = '/';
   };
 

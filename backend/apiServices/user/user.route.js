@@ -11,6 +11,6 @@ const userRouter = express.Router();
 userRouter.post("/", multerMiddleware(uploadImage.single("photo")), validateBody(createUserSchema), createUserController);
 userRouter.post("/login", validateBody(loginSchema), loginController);
 userRouter.patch("/", ensureAuth, validateBody(updateUserSchema), updateUserController);
-userRouter.get("/", getSessionUserController);
+userRouter.get("/", ensureAuth, getSessionUserController);
 userRouter.get("/:idUser/image", getUserImageController);
 export default userRouter;

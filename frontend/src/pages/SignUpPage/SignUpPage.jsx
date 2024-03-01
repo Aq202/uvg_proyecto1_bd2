@@ -53,7 +53,13 @@ function SignUpPage() {
   };
 
   const clearError = (e) => {
-    setErrors((lastVal) => ({ ...lastVal, [e.target.name]: null }));
+    const { name } = e.target;
+    if (name === 'password' || name === 'repeatPassword') {
+      delete errors.repeatPassword;
+      delete errors.password;
+    } else {
+      delete errors[name];
+    }
   };
 
   const validateName = () => {
@@ -62,13 +68,26 @@ function SignUpPage() {
     return false;
   };
   const validateEmail = () => {
+    // validate email format
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (form?.email?.trim().length > 0 && emailRegex.test(form?.email)) return true;
     if (form?.email?.trim().length > 0) return true;
-    setErrors((lastVal) => ({ ...lastVal, email: 'El email es obligatorio.' }));
+    if (!form.email || form.email.trim().length <= 0) {
+      setErrors((lastVal) => ({ ...lastVal, email: 'El email es obligatorio.' }));
+      return false;
+    }
+    setErrors((lastVal) => ({ ...lastVal, email: 'El email no es válido.' }));
     return false;
   };
   const validatePhone = () => {
-    if (form?.phone?.trim().length > 0) return true;
-    setErrors((lastVal) => ({ ...lastVal, phone: 'El teléfono es obligatorio.' }));
+    // validate if phone is a number
+    const phoneRegex = /^[0-9]+$/;
+    if (form?.phone?.trim().length > 0 && phoneRegex.test(form?.phone)) return true;
+    if (!form.phone || form.phone.trim().length <= 0) {
+      setErrors((lastVal) => ({ ...lastVal, phone: 'El teléfono es obligatorio.' }));
+      return false;
+    }
+    setErrors((lastVal) => ({ ...lastVal, phone: 'El teléfono debe ser un número.' }));
     return false;
   };
   const validatePassword = () => {
@@ -105,7 +124,7 @@ function SignUpPage() {
     e.preventDefault();
     clearErrors();
     if (!(validateEmail() && validatePassword()
-      && !validateName() && !validatePhone() && !validateRepeatedPassword())) return;
+      && validateName() && validatePhone() && validateRepeatedPassword())) return;
     signup({
       name: form.name,
       email: form.email,
@@ -159,6 +178,7 @@ function SignUpPage() {
               onFocus={clearError}
               options={prefixes}
               placeholder="Prefix"
+              className={styles.prefix}
             />
             <InputText
               title="Teléfono"
@@ -168,7 +188,7 @@ function SignUpPage() {
               error={errors?.phone}
               onBlur={validatePhone}
               onFocus={clearError}
-              style={{ maxWidth: '560px' }}
+              style={{ maxWidth: '560px', minWidth: 0 }}
             />
           </div>
           <InputText

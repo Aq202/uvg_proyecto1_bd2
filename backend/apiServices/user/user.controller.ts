@@ -110,7 +110,6 @@ const loginController = async (req: AppRequest, res: AppResponse) => {
 };
 
 const getSessionUserController = async (req: AppRequest, res: AppResponse) => {
-	console.log('entrando')
 	try {
 		if (!req.session) return;
 		const user = req.session;
