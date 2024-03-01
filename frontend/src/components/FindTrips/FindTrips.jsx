@@ -4,18 +4,19 @@ import styles from './FindTrips.module.css';
 import InputSelect from '../InputSelect';
 import Trip from '../Trip';
 import useFetch from '../../hooks/useFetch';
+import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
 
 function FindTrips() {
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({ role: 'none' });
   const [currentPage, setCurrentPage] = useState(0);
   const { callFetch: getRides, result: resultGet, error: errorGet } = useFetch();
   const [trips, setTrips] = useState([]);
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
+  const token = useToken();
 
   const getTrips = () => {
-    const { country, city, driver } = filters;
+    const { country, city, role } = filters;
     const paramsObj = { passenger: false };
 
     if (country !== undefined && country !== '') {
@@ -26,8 +27,9 @@ function FindTrips() {
       paramsObj.city = city;
     }
 
-    if (driver !== undefined && driver !== '') {
-      paramsObj.driver = driver;
+    if (role !== undefined && role !== '' && role !== 'none') {
+      if (role === 'driver') paramsObj.driver = true;
+      if (role === 'passenger') paramsObj.passenger = true;
     }
 
     const searchParams = new URLSearchParams(paramsObj);
@@ -121,7 +123,7 @@ function FindTrips() {
 
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'driver', title: 'Soy el conductor' }, { value: 'passenger', title: 'Soy pasajero' }, { value: '', title: 'Cualquiera' }]}
+              options={[{ value: 'driver', title: 'Soy el conductor' }, { value: 'passenger', title: 'Soy pasajero' }, { value: 'none', title: 'Ninguno' }]}
               name="role"
               onChange={handleFilterChange}
               placeholder="Soy..."

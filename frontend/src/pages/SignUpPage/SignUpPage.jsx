@@ -12,6 +12,7 @@ import useSignUp from '../../hooks/useSignUp';
 import InputSelect from '../../components/InputSelect/InputSelect';
 import countries from '../../assets/countries.ts';
 import useLogin from '../../hooks/useLogin';
+import InputPhoto from '../../components/InputPhoto/InputPhoto';
 
 /* Componente de la página de signUp.
 Maneja errores de inputs (nombre, email, teléfono y contraseña) y utiliza el hook
@@ -41,6 +42,10 @@ function SignUpPage() {
     const field = e.target.name;
     const { value } = e.target;
     setForm((lastValue) => ({ ...lastValue, [field]: value }));
+  };
+
+  const handleImageChange = (value) => {
+    setForm((lastVal) => ({ ...lastVal, photo: value }));
   };
 
   const clearErrors = () => {
@@ -106,6 +111,7 @@ function SignUpPage() {
       email: form.email,
       phone: form.prefix + form.phone,
       password: form.password,
+      photo: form.photo,
     });
   };
 
@@ -121,11 +127,8 @@ function SignUpPage() {
         <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
           <img alt="CarpoolIt logo" className={styles.logo} src={logo} />
           <h1>Crear Usuario</h1>
-          <span
-            className={styles.infoSpan}
-          >
-            Rellena tu información para registrarte
-          </span>
+
+          <InputPhoto onChange={handleImageChange} />
           <InputText
             title="Nombre"
             name="name"

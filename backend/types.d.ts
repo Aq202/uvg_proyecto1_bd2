@@ -5,8 +5,14 @@ type User = {
 	id: string;
 };
 
+type UploadedFile = {
+	fileName: string;
+	type: string;
+};
+
 type session = {
 	session?: User;
+	uploadedFiles?: UploadedFile[];
 };
 
 type AppRequest = session & Record<string, any>;

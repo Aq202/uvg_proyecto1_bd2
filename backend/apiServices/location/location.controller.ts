@@ -1,7 +1,7 @@
 import CustomError from "../../utils/customError.js";
 import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
-import { createLocation, deleteLocation, getLocations, updateLocation } from "./location.model.js";
+import { createLocation, deleteLocation, getCities, getCountries, getLocations, updateLocation } from "./location.model.js";
 
 const createLocationController = async (req: AppRequest, res: AppResponse) => {
 	const { name, country, city, address } = req.body;
@@ -81,9 +81,50 @@ const getLocationsController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
+const getCountriesListController = async (req: AppRequest, res: AppResponse) => {
+	if (!req.session) return;
+	const { fromUser } = req.query;
+	const idUser: string = req.session.id;
+
+	try {
+		const userFilter = exists(fromUser) ? idUser : undefined;
+		const result = await getCountries(userFilter)
+
+		if (!(result?.length > 0)) throw new CustomError("No se encontraron resultados.", 404);
+		res.send(result);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener lista de países.",
+		});
+	}
+};
+const getCitiesListController = async (req: AppRequest, res: AppResponse) => {
+	if (!req.session) return;
+	const { fromUser, country } = req.query;
+	const idUser: string = req.session.id;
+
+	try {
+		const userFilter = exists(fromUser) ? idUser : undefined;
+		const result = await getCities(userFilter, country)
+
+		if (!(result?.length > 0)) throw new CustomError("No se encontraron resultados.", 404);
+		res.send(result);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener lista de ciudades.",
+		});
+	}
+};
+
 export {
 	createLocationController,
 	updateLocationController,
 	deleteLocationController,
 	getLocationsController,
+	getCountriesListController,
+	getCitiesListController,
 };

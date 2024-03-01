@@ -5,6 +5,8 @@ import createLocationSchema from "./validationSchemas/createLocationSchema.js";
 import {
 	createLocationController,
 	deleteLocationController,
+	getCitiesListController,
+	getCountriesListController,
 	getLocationsController,
 	updateLocationController,
 } from "./location.controller.js";
@@ -16,4 +18,6 @@ locationRouter.post("", ensureAuth, validateBody(createLocationSchema), createLo
 locationRouter.patch("", ensureAuth, validateBody(updateLocationSchema), updateLocationController);
 locationRouter.delete("/:idLocation", ensureAuth, deleteLocationController);
 locationRouter.get("/", ensureAuth, getLocationsController);
+locationRouter.get("/countries", ensureAuth, getCountriesListController);
+locationRouter.get("/cities", ensureAuth, getCitiesListController);
 export default locationRouter;

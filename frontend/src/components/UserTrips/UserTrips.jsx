@@ -4,19 +4,42 @@ import styles from './UserTrips.module.css';
 import InputSelect from '../InputSelect';
 import Trip from '../Trip';
 import useFetch from '../../hooks/useFetch';
+import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
 
 function UserTrips() {
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({ role: 'driver' });
   const [currentPage, setCurrentPage] = useState(0);
   const [trips, setTrips] = useState([]);
   const { callFetch: getRides, result: resultGet, error: errorGet } = useFetch();
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZGRhNDM0MWIzMzk4YTBmODBjMWJjMyIsIm5hbWUiOiJQYWJsbyIsImVtYWlsIjoicGFibG9AZ21haWwuY29tIiwicGhvbmUiOiI1NTAwNDIzMyIsImlhdCI6MTcwOTAyNDMxOX0.Rql9zFZrTvBBgzTYxk56WFPpNUqLFEkXRUYOwXEt8Zs';
+  const token = useToken();
+
+  const readDate = (fechaISO) => {
+    const fecha = new Date(fechaISO);
+
+    // Convertir a cadena con formato local usando toLocaleString para manejar la zona horaria
+    const opciones = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'UTC', // Asegura que la conversión se haga respecto a la hora UTC
+    };
+
+    // Puedes cambiar 'es' por el código de tu zona horaria local si necesitas otro idioma o formato
+    const fechaHoraFormateada = fecha.toLocaleString('es', opciones);
+
+    // Para asegurar el formato deseado, podrías hacer un ajuste manual si es necesario
+    // Esto es un ejemplo y podría necesitar ajustes dependiendo del idioma o la zona horaria
+    return fechaHoraFormateada.replace(/\//g, '-').replace(',', '');
+  };
 
   const getUserTrips = () => {
-    const { country, city, driver } = filters;
-    const paramsObj = { passenger: true };
+    const { country, city, role } = filters;
+    const paramsObj = {};
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;
@@ -26,8 +49,9 @@ function UserTrips() {
       paramsObj.city = city;
     }
 
-    if (driver !== undefined && driver !== '') {
-      paramsObj.driver = driver;
+    if (role !== undefined && role !== '') {
+      if (role === 'driver') paramsObj.driver = true;
+      if (role === 'passenger') paramsObj.passenger = true;
     }
 
     const searchParams = new URLSearchParams(paramsObj);
@@ -60,6 +84,7 @@ function UserTrips() {
   }, [resultGet]);
 
   useEffect(() => {
+    if (filters.role === '') return;
     setTrips([]);
     getUserTrips();
   }, [currentPage, filters]);
@@ -99,7 +124,7 @@ function UserTrips() {
 
           <div className={styles.filterContainer}>
             <InputSelect
-              options={[{ value: 'driver', title: 'Soy el conductor' }, { value: 'passenger', title: 'Soy pasajero' }, { value: '', title: 'Cualquiera' }]}
+              options={[{ value: 'driver', title: 'Soy el conductor' }, { value: 'passenger', title: 'Soy pasajero' }]}
               name="role"
               onChange={handleFilterChange}
               placeholder="Soy..."
@@ -121,7 +146,7 @@ function UserTrips() {
               destinationAddress={trip.arrivalLocation.address}
               driver={trip.user.name}
               passengers={trip.passengers.length}
-              time={trip.datetime}
+              time={readDate(trip.datetime)}
               joined={trip.isPassenger}
               callback={refreshTrips}
             />

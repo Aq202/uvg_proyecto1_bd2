@@ -83,4 +83,30 @@ const getLocationById = async (idLocation) => {
         throw ex;
     }
 };
-export { createLocation, updateLocation, deleteLocation, getLocations, getLocationById };
+const getCountries = async (idUser) => {
+    const filter = {};
+    if (idUser)
+        filter.idUser = idUser;
+    const countries = await LocationSchema.find(filter, { country: 1 }).distinct("country");
+    return countries === null || countries === void 0 ? void 0 : countries.map(val => val);
+};
+const getCities = async (idUser, country) => {
+    const filter = {};
+    if (idUser)
+        filter.idUser = new ObjectId(idUser);
+    if (country)
+        filter.country = country;
+    const cities = await LocationSchema.aggregate([
+        { $match: filter },
+        { $group: { _id: { country: "$country", city: "$city" } } },
+        {
+            $project: {
+                _id: 0,
+                country: "$_id.country",
+                city: "$_id.city"
+            }
+        }
+    ]);
+    return cities;
+};
+export { createLocation, updateLocation, deleteLocation, getLocations, getLocationById, getCountries, getCities };

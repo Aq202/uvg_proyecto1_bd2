@@ -9,10 +9,10 @@ import CustomError from "./customError.js";
  * @param session Objeto session de la bd de mongo. Es opcional. Si se adjunta, se aborta y finaliza
  * la sesión.
  */
-const errorSender = async ({ res, ex, defaultError = "Ocurrió un error.", }) => {
+const errorSender = async ({ res, ex, defaultError = "Ocurrió un error.", defaultStatus = 500, }) => {
     var _a;
     let err = defaultError;
-    let status = 500;
+    let status = defaultStatus;
     if (ex instanceof CustomError) {
         err = ex.message;
         status = (_a = ex.status) !== null && _a !== void 0 ? _a : 500;
