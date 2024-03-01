@@ -86,6 +86,7 @@ const loginController = async (req, res) => {
     }
 };
 const getSessionUserController = async (req, res) => {
+    console.log('entrando');
     try {
         if (!req.session)
             return;
