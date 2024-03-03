@@ -14,7 +14,7 @@ import InputText from '../InputText';
 import Spinner from '../Spinner';
 
 function UserTrips() {
-  const [filters, setFilters] = useState({ role: 'driver' });
+  const [filters, setFilters] = useState({ role: 'driver', order: -1 });
   const [currentPage, setCurrentPage] = useState(0);
   const [trips, setTrips] = useState([]);
   const [rideToCreate, setRideToCreate] = useState(false);
@@ -130,6 +130,12 @@ function UserTrips() {
     return true;
   };
 
+  const handleDateOrder = () => {
+    let value = filters.order;
+    value = value === -1 ? 1 : -1;
+    setFilters((prev) => ({ ...prev, order: value }));
+  };
+
   const getCountries = () => {
     fetchCountries({
       uri: `${serverHost}/location/countries?fromUser=true`,
@@ -146,7 +152,7 @@ function UserTrips() {
 
   const getUserTrips = () => {
     const { country, city, role } = filters;
-    const paramsObj = { page: currentPage };
+    const paramsObj = { page: currentPage, order: filters.order };
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;
@@ -268,6 +274,10 @@ function UserTrips() {
 
         <div className={styles.filtersContainer}>
 
+          <div className={styles.filterContainer}>
+            <Button text="Ordenar por fecha" emptyBlack onClick={handleDateOrder} />
+          </div>
+
           {resultCountries && (
           <div className={styles.filterContainer}>
             <InputSelect
@@ -281,17 +291,19 @@ function UserTrips() {
           </div>
           )}
 
-          <div className={styles.filterContainer}>
-            <InputSelect
-              options={filters.country !== undefined && filters.countries !== '' && resultCities
-                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
-                : []}
-              name="city"
-              onChange={handleFilterChange}
-              placeholder="Ciudad"
-              value={filters?.city}
-            />
-          </div>
+          {resultCities && (
+            <div className={styles.filterContainer}>
+              <InputSelect
+                options={filters.country !== undefined && filters.countries !== '' && resultCities
+                  ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                  : []}
+                name="city"
+                onChange={handleFilterChange}
+                placeholder="Ciudad"
+                value={filters?.city}
+              />
+            </div>
+          )}
 
           <div className={styles.filterContainer}>
             <InputSelect

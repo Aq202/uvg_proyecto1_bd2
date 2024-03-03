@@ -13,6 +13,7 @@ function Button({
   emptyRed,
   green,
   emptyBlue,
+  emptyBlack,
   children,
   // eslint-disable-next-line react/prop-types
   buttonRef,
@@ -24,6 +25,7 @@ function Button({
       ${red ? styles.red : ''}
       ${green ? styles.green : ''}
       ${emptyBlue ? styles.emptyBlue : ''}
+      ${emptyBlack ? styles.emptyBlack : ''}
       ${className}`}
       type={type}
       onClick={onClick}
@@ -45,6 +47,7 @@ Button.propTypes = {
   emptyRed: PropTypes.bool,
   green: PropTypes.bool,
   emptyBlue: PropTypes.bool,
+  emptyBlack: PropTypes.bool,
   children: PropTypes.node,
 };
 
@@ -56,6 +59,7 @@ Button.defaultProps = {
   emptyRed: false,
   green: false,
   emptyBlue: false,
+  emptyBlack: false,
   type: 'button',
   disabled: false,
   children: null,
