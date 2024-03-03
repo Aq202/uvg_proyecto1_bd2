@@ -73,7 +73,7 @@
     width: 20vw;
     aspect-ratio: 1/1;
     object-fit: cover;
-    object-position: 0 0;
+    object-position: 0 50;
 }
 
 .aditionalInfo {
