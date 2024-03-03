@@ -1,7 +1,7 @@
 import { signToken } from "../../services/jwt.js";
 import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
-import { authenticate, createUser, updateUser } from "./user.model.js";
+import { authenticate, createManyUsers, createUser, updateUser } from "./user.model.js";
 import hash from "hash.js";
 import Grid from "gridfs-stream";
 import { connection, mongo } from "../../db/connection.js";
@@ -100,6 +100,26 @@ const getSessionUserController = async (req, res) => {
         });
     }
 };
+const uploadUsers = async (req, res) => {
+    const { data } = req.body;
+    try {
+        const users = data.map((user) => ({
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            password: hash.sha256().update(user.password).digest("hex"),
+        }));
+        const createdUsers = await createManyUsers(users);
+        res.send(createdUsers);
+    }
+    catch (ex) {
+        await errorSender({
+            res,
+            ex,
+            defaultError: "Ocurrio un error al crear nuevo usuario.",
+        });
+    }
+};
 const getUserImageController = async (req, res) => {
     try {
         const { idUser } = req.params;
@@ -130,4 +150,4 @@ const getUserImageController = async (req, res) => {
         });
     }
 };
-export { createUserController, loginController, updateUserController, getSessionUserController, getUserImageController, };
+export { createUserController, loginController, updateUserController, getSessionUserController, getUserImageController, uploadUsers, };

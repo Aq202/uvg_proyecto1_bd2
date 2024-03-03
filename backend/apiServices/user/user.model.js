@@ -1,7 +1,27 @@
 import UserSchema from "../../db/schemas/user.schema.js";
 import CustomError from "../../utils/customError.js";
 import exists, { someExists } from "../../utils/exists.js";
-import { createUserDto } from "./user.dto.js";
+import { createUserDto, createMultipleUsersDto } from "./user.dto.js";
+const createManyUsers = async (users) => {
+    var _a, _b, _c;
+    try {
+        const operations = users.map((user) => ({
+            insertOne: {
+                document: user,
+            },
+        }));
+        await UserSchema.bulkWrite(operations);
+        return createMultipleUsersDto(users);
+    }
+    catch (ex) {
+        const { err: WriteError } = ex.writeErrors[0];
+        console.log('>>>>>>>>>>>>', (_a = WriteError === null || WriteError === void 0 ? void 0 : WriteError.errmsg) === null || _a === void 0 ? void 0 : _a.includes('email'));
+        if (ex.code === 11000 && ((_b = WriteError === null || WriteError === void 0 ? void 0 : WriteError.errmsg) === null || _b === void 0 ? void 0 : _b.includes('email'))) {
+            throw new CustomError(`El email "${(_c = WriteError === null || WriteError === void 0 ? void 0 : WriteError.op) === null || _c === void 0 ? void 0 : _c.email}" ya se encuentra registrado.`, 400);
+        }
+        throw ex;
+    }
+};
 const createUser = async ({ name, email, phone, password, }) => {
     var _a;
     try {
@@ -62,4 +82,4 @@ const getUserById = async ({ idUser }) => {
         throw ex;
     }
 };
-export { createUser, authenticate, updateUser, getUserById };
+export { createUser, authenticate, updateUser, getUserById, createManyUsers };

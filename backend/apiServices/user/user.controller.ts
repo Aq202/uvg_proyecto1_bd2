@@ -1,7 +1,7 @@
 import { signToken } from "../../services/jwt.js";
 import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
-import { authenticate, createUser, updateUser } from "./user.model.js";
+import { authenticate, createManyUsers, createUser, updateUser } from "./user.model.js";
 import hash from "hash.js";
 import Grid from "gridfs-stream";
 import { connection, mongo } from "../../db/connection.js";
@@ -9,7 +9,7 @@ import CustomError from "../../utils/customError.js";
 import fs from "fs";
 import { GridFSBucket } from "mongodb";
 
-const uploadUserImage = (idUser:string, file:UploadedFile) => {
+const uploadUserImage = (idUser: string, file: UploadedFile) => {
 
 	return new Promise((resolve, reject) => {
 
@@ -27,24 +27,23 @@ const uploadUserImage = (idUser:string, file:UploadedFile) => {
 		fs.createReadStream(filePath).pipe(uploadStream);
 
 		uploadStream.on("error", async (error) => {
-			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
+			fs.unlink(filePath, () => { }); // Eliminar archivo temporal
 			reject(error)
 		});
 
 		uploadStream.on("finish", () => {
-			fs.unlink(filePath, () => {}); // Eliminar archivo temporal
+			fs.unlink(filePath, () => { }); // Eliminar archivo temporal
 			resolve(1);
 		});
-	
+
 	})
 };
 
 const createUserController = async (req: AppRequest, res: AppResponse) => {
 	const { name, email, phone, password } = req.body;
 
-	
 	try {
-		
+
 		const file = req.uploadedFiles?.[0];
 		if (!file) throw new CustomError("No se proporionó una foto de perfil.", 400);
 
@@ -123,6 +122,29 @@ const getSessionUserController = async (req: AppRequest, res: AppResponse) => {
 	}
 };
 
+const uploadUsers = async (req: AppRequest, res: AppResponse) => {
+	const { data } = req.body;
+
+	try {
+		const users = data.map((user: { name: string, email: string, phone: string, password: string }) => ({
+			name: user.name,
+			email: user.email,
+			phone: user.phone,
+			password: hash.sha256().update(user.password).digest("hex"),
+		}))
+
+		const createdUsers = await createManyUsers(users);
+
+		res.send(createdUsers);
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al crear nuevo usuario.",
+		});
+	}
+}
+
 const getUserImageController = async (req: AppResponse, res: AppRequest) => {
 	try {
 		const { idUser } = req.params;
@@ -162,4 +184,5 @@ export {
 	updateUserController,
 	getSessionUserController,
 	getUserImageController,
+	uploadUsers,
 };
