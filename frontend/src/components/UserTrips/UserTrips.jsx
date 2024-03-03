@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
+import { FaArrowUp as ArrowUpIcon, FaArrowDown as ArrowDownIcon } from 'react-icons/fa';
 import styles from './UserTrips.module.css';
 import InputSelect from '../InputSelect';
 import Trip from '../Trip';
@@ -275,7 +276,15 @@ function UserTrips() {
         <div className={styles.filtersContainer}>
 
           <div className={styles.filterContainer}>
-            <Button text="Ordenar por fecha" emptyBlack onClick={handleDateOrder} />
+            <Button
+              className={styles.dateButton}
+              emptyBlack
+              onClick={handleDateOrder}
+            >
+              <p className={styles.dateText}>{filters.order === -1 ? 'Mostrar fechas en orden ascendente' : 'Mostrar fechas en orden descendente'}</p>
+              {filters.order === -1 && <ArrowUpIcon />}
+              {filters.order === 1 && <ArrowDownIcon />}
+            </Button>
           </div>
 
           {resultCountries && (
