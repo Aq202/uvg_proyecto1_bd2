@@ -2,17 +2,33 @@
     padding: 4%;
     display: flex;
     flex-direction: column;
+    gap: 15px;
+}
+
+.mainContainer thead tr {
+    background-color: #454448 !important;
+    color: white !important;
 }
 
 .headerSection {
     display: flex;
     width: 100%;
     align-items: center;
+    justify-content: center;
 }
 
 .title {
     font-size: 24px;
     font-weight: bold;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.subTitle {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .filtersContainer {
@@ -108,10 +124,12 @@
     .filtersContainer {
         margin-left: 0;
     }
+
     .form {
         display: flex;
         flex-direction: column;
     }
+
     .mainInfo img {
         width: 80%;
     }
