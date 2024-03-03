@@ -67,6 +67,7 @@ const getLocations = async ({ idUser, country, city, page, }) => {
             $limit: consts.resultsNumberPerPage,
         });
     }
+    queryPipeline.push({ $sort: { name: 1 } });
     const locations = await LocationSchema.aggregate(queryPipeline);
     return { pages, total: count, result: createMultipleLocationsDto(locations) };
 };
