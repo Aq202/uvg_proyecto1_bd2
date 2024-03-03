@@ -16,8 +16,6 @@ function Profile() {
     callFetch: uploadUsers, result: success, loading, error: errorUpload,
   } = useFetch();
 
-  console.log('errorUpload>>>>', errorUpload);
-
   const clean = () => {
     setError(false);
     setErrorMessage('');
@@ -52,7 +50,6 @@ function Profile() {
   };
 
   useEffect(() => {
-    console.log('users>>>>', users);
     const data = users.map((user) => ({
       name: user.name,
       email: user.email,
@@ -60,12 +57,11 @@ function Profile() {
       password: user.password,
     }));
 
-    console.log('data>>>>', JSON.stringify(data, null, 2));
     if (users.length) {
       uploadUsers({
         uri: `${serverHost}/user/upload`,
         headers: { authorization: token },
-        body: { data },
+        body: JSON.stringify({ data }),
         method: 'POST',
         parse: false,
       });
@@ -75,7 +71,7 @@ function Profile() {
   return (
     <div className={styles.mainContainer}>
       {loading && <Spinner />}
-      {errorUpload && <div className={styles.success}>Usuarios agregados</div>}
+      {errorUpload && <div className={styles.error}>{errorUpload.message ?? 'Error al agregar usuarios'}</div>}
       {success && !errorUpload && users.length !== 0
         && <div className={styles.success}>Usuarios agregados</div>}
       {users.length === 0 && !loading && !success && (

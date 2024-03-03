@@ -127,7 +127,6 @@ const getSessionUserController = async (req: AppRequest, res: AppResponse) => {
 
 const uploadUsers = async (req: AppRequest, res: AppResponse) => {
 	const { data } = req.body;
-	console.log("data", data);
 	try {
 		const users = data.map((user: { name: string, email: string, phone: string, password: string }) => ({
 			name: user.name,
@@ -143,7 +142,7 @@ const uploadUsers = async (req: AppRequest, res: AppResponse) => {
 		await errorSender({
 			res,
 			ex,
-			defaultError: "Ocurrio un error al crear nuevo usuario.",
+			defaultError: "Ocurrio un error al importar usuarios.",
 		});
 	}
 }
