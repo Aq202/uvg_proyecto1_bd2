@@ -7,6 +7,7 @@ import UserTrips from '../../components/UserTrips';
 import FindTrips from '../../components/FindTrips';
 import Places from '../../components/Places/Places';
 import Profile from '../../components/Profile';
+import Charts from '../../components/Charts';
 
 function MainPage() {
   const [currentSection, switchSection] = toggleNavBar();
@@ -24,6 +25,7 @@ function MainPage() {
         {currentSection === 'findTrips' && <FindTrips />}
         {currentSection === 'places' && <Places switchSection={switchSection} />}
         {currentSection === 'profile' && <Profile />}
+        {currentSection === 'charts' && <Charts />}
       </div>
     </div>
   );
