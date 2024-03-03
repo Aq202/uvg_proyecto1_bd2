@@ -39,7 +39,7 @@ function FindTrips() {
 
   const getTrips = () => {
     const { country, city, role } = filters;
-    const paramsObj = { passenger: false };
+    const paramsObj = { passenger: false, page: currentPage };
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;

@@ -146,7 +146,7 @@ function UserTrips() {
 
   const getUserTrips = () => {
     const { country, city, role } = filters;
-    const paramsObj = {};
+    const paramsObj = { page: currentPage };
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;
