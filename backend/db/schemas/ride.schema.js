@@ -6,6 +6,7 @@ const rideSchema = new Schema({
     arrivalLocation: { type: ObjectId, ref: "location", required: true },
     user: { type: userSubSchema, required: true },
     passengers: { type: [userSubSchema] },
+    num_passengers: { type: Number, default: 0 },
     completed: { type: Boolean, default: false },
     datetime: { type: Date, required: true },
     vehicle: {

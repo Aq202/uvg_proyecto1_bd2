@@ -155,7 +155,7 @@ const assignUserToRide = async ({ user, idRide }: { user: User; idRide: string }
 		session.startTransaction();
 		const ride = await RideSchema.findOneAndUpdate(
 			{ _id: idRide },
-			{ $push: { passengers: { _id: user.id, ...user } } },
+			{ $push: { passengers: { _id: user.id, ...user } }, $inc: {num_passengers: 1} },
 			{ session }
 		);
 
@@ -175,7 +175,7 @@ const removeUserFromRide = async ({ idUser, idRide }: { idUser: string; idRide: 
 	try {
 		const { acknowledged, matchedCount } = await RideSchema.updateOne(
 			{ _id: idRide },
-			{ passengers: { $pull: { _id: idUser } } }
+			{ passengers: { $pull: { _id: idUser }, }, $inc: {num_passengers: -1} }
 		);
 
 		if (matchedCount === 0) throw new CustomError("No se encontraron coincidencias.", 404);

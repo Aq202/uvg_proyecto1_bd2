@@ -113,7 +113,7 @@ const assignUserToRide = async ({ user, idRide }) => {
     const session = await startSession();
     try {
         session.startTransaction();
-        const ride = await RideSchema.findOneAndUpdate({ _id: idRide }, { $push: { passengers: Object.assign({ _id: user.id }, user) } }, { session });
+        const ride = await RideSchema.findOneAndUpdate({ _id: idRide }, { $push: { passengers: Object.assign({ _id: user.id }, user) }, $inc: { num_passengers: 1 } }, { session });
         if (!ride)
             throw new CustomError("No se encontró el viaje.", 404);
         if (ride.user._id === user.id)
@@ -129,7 +129,7 @@ const assignUserToRide = async ({ user, idRide }) => {
 };
 const removeUserFromRide = async ({ idUser, idRide }) => {
     try {
-        const { acknowledged, matchedCount } = await RideSchema.updateOne({ _id: idRide }, { passengers: { $pull: { _id: idUser } } });
+        const { acknowledged, matchedCount } = await RideSchema.updateOne({ _id: idRide }, { passengers: { $pull: { _id: idUser }, }, $inc: { num_passengers: -1 } });
         if (matchedCount === 0)
             throw new CustomError("No se encontraron coincidencias.", 404);
         if (!acknowledged)
