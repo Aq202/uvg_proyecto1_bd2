@@ -435,7 +435,7 @@ function UserTrips() {
           )}
           {errorGetLocationsCreate && (
           <p className={styles.createDescription}>
-            Ocurió un error al obtener las ubicaciones del usuario
+            Aún no has registrado ninguna ubicación para tus viajes
           </p>
           )}
           {loadingGetLocationsCreate && <Spinner />}
