@@ -126,7 +126,7 @@ const getCountries = async (idUser?:string) => {
 
 	const filter:{idUser?:string} = {}
 	if(idUser) filter.idUser = idUser;
-	const countries = await LocationSchema.find(filter, {country: 1}).distinct("country")
+	const countries = await LocationSchema.find(filter, {country: 1}).distinct("country").sort({country: 1})
 
 	return countries?.map(val => val)
 }
@@ -145,6 +145,9 @@ const getCities = async (idUser?:string, country?:string) => {
 				country: "$_id.country",
 				city: "$_id.city"
 			}
+		},
+		{
+			$sort: {"city": 1}
 		}
 	])
 
