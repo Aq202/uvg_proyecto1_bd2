@@ -67,6 +67,7 @@ const getLocations = async ({ idUser, country, city, page, }) => {
             $limit: consts.resultsNumberPerPage,
         });
     }
+    queryPipeline.push({ $sort: { name: 1 } });
     const locations = await LocationSchema.aggregate(queryPipeline);
     return { pages, total: count, result: createMultipleLocationsDto(locations) };
 };
@@ -87,7 +88,7 @@ const getCountries = async (idUser) => {
     const filter = {};
     if (idUser)
         filter.idUser = idUser;
-    const countries = await LocationSchema.find(filter, { country: 1 }).distinct("country");
+    const countries = await LocationSchema.find(filter, { country: 1 }).distinct("country").sort({ country: 1 });
     return countries === null || countries === void 0 ? void 0 : countries.map(val => val);
 };
 const getCities = async (idUser, country) => {
@@ -105,6 +106,9 @@ const getCities = async (idUser, country) => {
                 country: "$_id.country",
                 city: "$_id.city"
             }
+        },
+        {
+            $sort: { "city": 1 }
         }
     ]);
     return cities;

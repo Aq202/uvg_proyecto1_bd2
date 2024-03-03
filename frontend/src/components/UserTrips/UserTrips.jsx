@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
+import { FaArrowUp as ArrowUpIcon, FaArrowDown as ArrowDownIcon } from 'react-icons/fa';
 import styles from './UserTrips.module.css';
 import InputSelect from '../InputSelect';
 import Trip from '../Trip';
@@ -14,7 +15,7 @@ import InputText from '../InputText';
 import Spinner from '../Spinner';
 
 function UserTrips() {
-  const [filters, setFilters] = useState({ role: 'driver' });
+  const [filters, setFilters] = useState({ role: 'driver', order: -1 });
   const [currentPage, setCurrentPage] = useState(0);
   const [trips, setTrips] = useState([]);
   const [rideToCreate, setRideToCreate] = useState(false);
@@ -130,6 +131,12 @@ function UserTrips() {
     return true;
   };
 
+  const handleDateOrder = () => {
+    let value = filters.order;
+    value = value === -1 ? 1 : -1;
+    setFilters((prev) => ({ ...prev, order: value }));
+  };
+
   const getCountries = () => {
     fetchCountries({
       uri: `${serverHost}/location/countries?fromUser=true`,
@@ -146,7 +153,7 @@ function UserTrips() {
 
   const getUserTrips = () => {
     const { country, city, role } = filters;
-    const paramsObj = {};
+    const paramsObj = { page: currentPage, order: filters.order };
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;
@@ -268,6 +275,18 @@ function UserTrips() {
 
         <div className={styles.filtersContainer}>
 
+          <div className={styles.filterContainer}>
+            <Button
+              className={styles.dateButton}
+              emptyBlack
+              onClick={handleDateOrder}
+            >
+              <p className={styles.dateText}>{filters.order === -1 ? 'Mostrar fechas en orden ascendente' : 'Mostrar fechas en orden descendente'}</p>
+              {filters.order === -1 && <ArrowUpIcon />}
+              {filters.order === 1 && <ArrowDownIcon />}
+            </Button>
+          </div>
+
           {resultCountries && (
           <div className={styles.filterContainer}>
             <InputSelect
@@ -281,17 +300,19 @@ function UserTrips() {
           </div>
           )}
 
-          <div className={styles.filterContainer}>
-            <InputSelect
-              options={filters.country !== undefined && filters.countries !== '' && resultCities
-                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
-                : []}
-              name="city"
-              onChange={handleFilterChange}
-              placeholder="Ciudad"
-              value={filters?.city}
-            />
-          </div>
+          {resultCities && (
+            <div className={styles.filterContainer}>
+              <InputSelect
+                options={filters.country !== undefined && filters.countries !== '' && resultCities
+                  ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                  : []}
+                name="city"
+                onChange={handleFilterChange}
+                placeholder="Ciudad"
+                value={filters?.city}
+              />
+            </div>
+          )}
 
           <div className={styles.filterContainer}>
             <InputSelect
@@ -414,7 +435,7 @@ function UserTrips() {
           )}
           {errorGetLocationsCreate && (
           <p className={styles.createDescription}>
-            Ocurió un error al obtener las ubicaciones del usuario
+            Aún no has registrado ninguna ubicación para tus viajes
           </p>
           )}
           {loadingGetLocationsCreate && <Spinner />}

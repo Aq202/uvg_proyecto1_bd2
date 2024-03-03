@@ -250,17 +250,19 @@ function Places() {
             </div>
           )}
 
-          <div className={styles.filterContainer}>
-            <InputSelect
-              options={filters.country !== undefined && filters.countries !== '' && resultCities
-                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
-                : []}
-              name="city"
-              onChange={handleFilterChange}
-              placeholder="Ciudad"
-              value={filters?.city}
-            />
-          </div>
+          {resultCities && (
+            <div className={styles.filterContainer}>
+              <InputSelect
+                options={filters.country !== undefined && filters.countries !== '' && resultCities
+                  ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                  : []}
+                name="city"
+                onChange={handleFilterChange}
+                placeholder="Ciudad"
+                value={filters?.city}
+              />
+            </div>
+          )}
 
         </div>
       </div>
