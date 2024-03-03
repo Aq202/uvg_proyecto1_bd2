@@ -104,6 +104,7 @@ const getSessionUserController = async (req, res) => {
 };
 const uploadUsers = async (req, res) => {
     const { data } = req.body;
+    console.log("data", data);
     try {
         const users = data.map((user) => ({
             name: user.name,

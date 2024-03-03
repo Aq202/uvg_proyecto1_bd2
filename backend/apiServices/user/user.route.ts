@@ -17,7 +17,7 @@ import uploadImage from "../../services/uploadFiles/uploadImage.js";
 const userRouter = express.Router();
 
 userRouter.post("/", multerMiddleware(uploadImage.single("photo")), validateBody(createUserSchema), createUserController);
-userRouter.post("/upload", uploadUsers);
+userRouter.post("/upload", ensureAuth, uploadUsers);
 userRouter.post("/login", validateBody(loginSchema), loginController);
 userRouter.patch("/", ensureAuth, validateBody(updateUserSchema), updateUserController);
 userRouter.get("/", ensureAuth, getSessionUserController);
