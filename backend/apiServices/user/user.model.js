@@ -4,7 +4,7 @@ import CustomError from "../../utils/customError.js";
 import exists, { someExists } from "../../utils/exists.js";
 import { createUserDto, createMultipleUsersDto } from "./user.dto.js";
 const createManyUsers = async (users) => {
-    var _a, _b, _c;
+    var _a, _b;
     try {
         const operations = users.map((user) => ({
             insertOne: {
@@ -16,9 +16,8 @@ const createManyUsers = async (users) => {
     }
     catch (ex) {
         const { err: WriteError } = ex.writeErrors[0];
-        console.log('>>>>>>>>>>>>', (_a = WriteError === null || WriteError === void 0 ? void 0 : WriteError.errmsg) === null || _a === void 0 ? void 0 : _a.includes('email'));
-        if (ex.code === 11000 && ((_b = WriteError === null || WriteError === void 0 ? void 0 : WriteError.errmsg) === null || _b === void 0 ? void 0 : _b.includes('email'))) {
-            throw new CustomError(`El email "${(_c = WriteError === null || WriteError === void 0 ? void 0 : WriteError.op) === null || _c === void 0 ? void 0 : _c.email}" ya se encuentra registrado.`, 400);
+        if (ex.code === 11000 && ((_a = WriteError === null || WriteError === void 0 ? void 0 : WriteError.errmsg) === null || _a === void 0 ? void 0 : _a.includes('email'))) {
+            throw new CustomError(`El email "${(_b = WriteError === null || WriteError === void 0 ? void 0 : WriteError.op) === null || _b === void 0 ? void 0 : _b.email}" ya se encuentra registrado.`, 400);
         }
         throw ex;
     }
@@ -88,8 +87,4 @@ const getUserById = async ({ idUser }) => {
         throw ex;
     }
 };
-<<<<<<< HEAD
-export { createUser, authenticate, updateUser, getUserById, createManyUsers };
-=======
-export { createUser, authenticate, updateUser, getUserById, updateUserSubdocuments };
->>>>>>> 495a8336ebd3f00720125aea0a4102daca7a95a9
+export { createUser, authenticate, updateUser, getUserById, createManyUsers, updateUserSubdocuments };
