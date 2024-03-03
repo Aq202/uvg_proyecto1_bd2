@@ -70,3 +70,16 @@
 .button.button.emptyBlue:hover {
   color: #1d45ac;
 }
+.button.emptyBlack {
+  color: #2b2b2b;
+  border: 1.5px solid #A6A6A6;
+  border-radius: 3px;
+  font-family: 'Montserrat';
+  background-color: #ffffff;
+  font-size: 15px;
+  padding: 10px;
+}
+
+.button.button.emptyBlack:hover {
+  color: #363535;
+}

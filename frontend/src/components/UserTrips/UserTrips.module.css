@@ -4,6 +4,16 @@
     flex-direction: column;
 }
 
+.dateButton{
+    display: flex;
+    align-items: center;
+}
+
+.dateText{
+    margin: 0 5px 0 0;
+    font-size: 13px;
+}
+
 .headerSection{
     display: flex;
     width: 100%;

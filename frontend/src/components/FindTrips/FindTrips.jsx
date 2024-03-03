@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination } from '@mui/material';
+import { FaArrowUp as ArrowUpIcon, FaArrowDown as ArrowDownIcon } from 'react-icons/fa';
 import styles from './FindTrips.module.css';
 import InputSelect from '../InputSelect';
 import Trip from '../Trip';
@@ -7,9 +8,10 @@ import useFetch from '../../hooks/useFetch';
 import useToken from '../../hooks/useToken';
 import { serverHost } from '../../config';
 import Spinner from '../Spinner';
+import Button from '../Button';
 
 function FindTrips() {
-  const [filters, setFilters] = useState({ role: 'none' });
+  const [filters, setFilters] = useState({ role: 'none', order: -1 });
   const [currentPage, setCurrentPage] = useState(0);
   const {
     callFetch: getRides,
@@ -25,21 +27,21 @@ function FindTrips() {
 
   const getCountries = () => {
     fetchCountries({
-      uri: `${serverHost}/location/countries?fromUser=true`,
+      uri: `${serverHost}/location/countries`,
       headers: { authorization: token },
     });
   };
 
   const getCities = (country) => {
     fetchCities({
-      uri: `${serverHost}/location/cities?fromUser=true&country=${country}`,
+      uri: `${serverHost}/location/cities?country=${country}`,
       headers: { authorization: token },
     });
   };
 
   const getTrips = () => {
     const { country, city, role } = filters;
-    const paramsObj = { passenger: false };
+    const paramsObj = { passenger: false, page: currentPage, order: filters.order };
 
     if (country !== undefined && country !== '') {
       paramsObj.country = country;
@@ -70,6 +72,12 @@ function FindTrips() {
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateOrder = () => {
+    let value = filters.order;
+    value = value === -1 ? 1 : -1;
+    setFilters((prev) => ({ ...prev, order: value }));
   };
 
   const handlePageChange = (e, page) => {
@@ -128,6 +136,18 @@ function FindTrips() {
 
         <div className={styles.filtersContainer}>
 
+          <div className={styles.filterContainer}>
+            <Button
+              className={styles.dateButton}
+              emptyBlack
+              onClick={handleDateOrder}
+            >
+              <p className={styles.dateText}>{filters.order === -1 ? 'Mostrar fechas en orden ascendente' : 'Mostrar fechas en orden descendente'}</p>
+              {filters.order === -1 && <ArrowUpIcon />}
+              {filters.order === 1 && <ArrowDownIcon />}
+            </Button>
+          </div>
+
           {resultCountries && (
           <div className={styles.filterContainer}>
             <InputSelect
@@ -141,17 +161,19 @@ function FindTrips() {
           </div>
           )}
 
-          <div className={styles.filterContainer}>
-            <InputSelect
-              options={filters.country !== undefined && filters.countries !== '' && resultCities
-                ? resultCities.map((city) => ({ value: city.city, title: city.city }))
-                : []}
-              name="city"
-              onChange={handleFilterChange}
-              placeholder="Ciudad"
-              value={filters?.city}
-            />
-          </div>
+          {resultCities && (
+            <div className={styles.filterContainer}>
+              <InputSelect
+                options={filters.country !== undefined && filters.countries !== '' && resultCities
+                  ? resultCities.map((city) => ({ value: city.city, title: city.city }))
+                  : []}
+                name="city"
+                onChange={handleFilterChange}
+                placeholder="Ciudad"
+                value={filters?.city}
+              />
+            </div>
+          )}
 
           <div className={styles.filterContainer}>
             <InputSelect
