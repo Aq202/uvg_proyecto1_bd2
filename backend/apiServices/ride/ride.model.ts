@@ -186,4 +186,44 @@ const removeUserFromRide = async ({ idUser, idRide }: { idUser: string; idRide: 
 	}
 };
 
-export { createRide, getRides, assignUserToRide, removeUserFromRide };
+const getTopUsersWithMostCompletedRides = async () => {
+
+	const result = await RideSchema.aggregate([
+		{
+			$match: { completed: true } 
+		},
+		{
+			$group: {
+				_id: "$user._id", 
+				totalTrips: { $sum: 1 } 
+			}
+		},
+		{
+			$lookup: { 
+				from: "users",
+				localField: "_id",
+				foreignField: "_id",
+				as: "user"
+			}
+		},
+		{
+			$unwind: "$user" 
+		},
+		{
+			$addFields: {"user.id": "$user._id"}
+		},
+		{
+			$project: {totalTrips: 1, "user.name":1, "_id":0, "user.id": 1}
+		},
+		{
+			$sort: { totalTrips: -1 } 
+		},
+		{
+			$limit: 5 
+		}
+	])
+
+	return result;
+}
+
+export { createRide, getRides, assignUserToRide, removeUserFromRide, getTopUsersWithMostCompletedRides };

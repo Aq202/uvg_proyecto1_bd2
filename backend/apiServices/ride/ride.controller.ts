@@ -3,7 +3,7 @@ import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
 import parseBoolean from "../../utils/parseBoolean.js";
 import { getLocationById } from "../location/location.model.js";
-import { assignUserToRide, createRide, getRides, removeUserFromRide } from "./ride.model.js";
+import { assignUserToRide, createRide, getRides, getTopUsersWithMostCompletedRides, removeUserFromRide } from "./ride.model.js";
 
 const createRideController = async (req: AppRequest, res: AppResponse) => {
 	const {
@@ -114,9 +114,26 @@ const removeUserFromRideController = async (req: AppRequest, res: AppResponse) =
 	}
 };
 
+const getTopUsersWithMostCompletedRidesController = async (req:AppRequest, res: AppResponse) => {
+	try {
+
+		const result = await getTopUsersWithMostCompletedRides();
+
+		res.send(result)
+
+	} catch (ex) {
+		await errorSender({
+			res,
+			ex,
+			defaultError: "Ocurrio un error al obtener top usuarios con más viajes completados.",
+		});
+	}
+}
+
 export {
 	createRideController,
 	getRidesController,
 	assignUserToRideController,
 	removeUserFromRideController,
+	getTopUsersWithMostCompletedRidesController
 };
