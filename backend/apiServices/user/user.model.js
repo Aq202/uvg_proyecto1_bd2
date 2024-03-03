@@ -1,3 +1,4 @@
+import RideSchema from "../../db/schemas/ride.schema.js";
 import UserSchema from "../../db/schemas/user.schema.js";
 import CustomError from "../../utils/customError.js";
 import exists, { someExists } from "../../utils/exists.js";
@@ -51,6 +52,11 @@ const updateUser = async ({ id, name, email, phone, password, }) => {
         throw ex;
     }
 };
+const updateUserSubdocuments = async (user) => {
+    const userObj = Object.assign(Object.assign({}, user), { _id: user.id });
+    await RideSchema.updateMany({ "user._id": user.id }, { user: userObj });
+    await RideSchema.updateMany({}, { $set: { "passengers.$[elem]": userObj } }, { arrayFilters: [{ "elem._id": user.id }] });
+};
 const getUserById = async ({ idUser }) => {
     try {
         const user = await UserSchema.findById(idUser, { password: 0 });
@@ -62,4 +68,4 @@ const getUserById = async ({ idUser }) => {
         throw ex;
     }
 };
-export { createUser, authenticate, updateUser, getUserById };
+export { createUser, authenticate, updateUser, getUserById, updateUserSubdocuments };
