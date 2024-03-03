@@ -1,7 +1,28 @@
+import RideSchema from "../../db/schemas/ride.schema.js";
 import UserSchema from "../../db/schemas/user.schema.js";
 import CustomError from "../../utils/customError.js";
 import exists, { someExists } from "../../utils/exists.js";
-import { createUserDto } from "./user.dto.js";
+import { createUserDto, createMultipleUsersDto } from "./user.dto.js";
+
+const createManyUsers = async (users: { name: string, email: string, phone: string, password: string }[]) => {
+	try {
+		const operations = users.map((user) => ({
+			insertOne: {
+				document: user,
+			},
+		}));
+
+		await UserSchema.bulkWrite(operations);
+		return createMultipleUsersDto(users as any);
+	} catch (ex: any) {
+		const {err: WriteError} = ex.writeErrors[0];
+		if (ex.code === 11000 && WriteError?.errmsg?.includes('email')) {
+			throw new CustomError(`El email "${WriteError?.op?.email}" ya se encuentra registrado.`, 400);
+		}
+		throw ex;
+	}
+
+}
 
 const createUser = async ({
 	name,
@@ -80,6 +101,16 @@ const updateUser = async ({
 	}
 };
 
+const updateUserSubdocuments = async (user:User) => {
+	
+	const userObj = {...user, _id: user.id}
+	await RideSchema.updateMany({"user._id": user.id}, {user:userObj})
+	await RideSchema.updateMany(
+		{},
+		{ $set: { "passengers.$[elem]": userObj } },
+  	{ arrayFilters: [{ "elem._id": user.id}] })
+}
+
 const getUserById = async ({ idUser }: { idUser: string }) => {
 	try {
 		const user = await UserSchema.findById(idUser, { password: 0 });
@@ -91,4 +122,4 @@ const getUserById = async ({ idUser }: { idUser: string }) => {
 	}
 };
 
-export { createUser, authenticate, updateUser, getUserById };
+export { createUser, authenticate, updateUser, getUserById, createManyUsers, updateUserSubdocuments };
