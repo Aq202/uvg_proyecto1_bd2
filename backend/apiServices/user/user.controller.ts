@@ -1,7 +1,7 @@
 import { signToken } from "../../services/jwt.js";
 import errorSender from "../../utils/errorSender.js";
 import exists from "../../utils/exists.js";
-import { authenticate, createManyUsers, createUser, updateUser } from "./user.model.js";
+import { authenticate, createManyUsers, createUser, updateUser, updateUserSubdocuments } from "./user.model.js";
 import hash from "hash.js";
 import Grid from "gridfs-stream";
 import { connection, mongo } from "../../db/connection.js";
@@ -75,6 +75,9 @@ const updateUserController = async (req: AppRequest, res: AppResponse) => {
 			: undefined;
 
 		const user = await updateUser({ id, name, email, phone, password: passwordHash });
+
+		// Actualizar documentos embedded
+		await updateUserSubdocuments(user)
 
 		res.send(user);
 	} catch (ex) {
