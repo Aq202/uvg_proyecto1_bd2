@@ -61,7 +61,7 @@ function Profile() {
       uploadUsers({
         uri: `${serverHost}/user/upload`,
         headers: { authorization: token },
-        body: { data },
+        body: JSON.stringify({ data }),
         method: 'POST',
         parse: false,
       });
@@ -71,7 +71,7 @@ function Profile() {
   return (
     <div className={styles.mainContainer}>
       {loading && <Spinner />}
-      {errorUpload && <div className={styles.success}>Usuarios agregados</div>}
+      {errorUpload && <div className={styles.error}>{errorUpload.message ?? 'Error al agregar usuarios'}</div>}
       {success && !errorUpload && users.length !== 0
         && <div className={styles.success}>Usuarios agregados</div>}
       {users.length === 0 && !loading && !success && (
