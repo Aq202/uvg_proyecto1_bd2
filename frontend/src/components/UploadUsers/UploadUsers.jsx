@@ -16,8 +16,6 @@ function Profile() {
     callFetch: uploadUsers, result: success, loading, error: errorUpload,
   } = useFetch();
 
-  console.log('errorUpload>>>>', errorUpload);
-
   const clean = () => {
     setError(false);
     setErrorMessage('');
@@ -52,7 +50,6 @@ function Profile() {
   };
 
   useEffect(() => {
-    console.log('users>>>>', users);
     const data = users.map((user) => ({
       name: user.name,
       email: user.email,
@@ -60,7 +57,6 @@ function Profile() {
       password: user.password,
     }));
 
-    console.log('data>>>>', JSON.stringify(data, null, 2));
     if (users.length) {
       uploadUsers({
         uri: `${serverHost}/user/upload`,
